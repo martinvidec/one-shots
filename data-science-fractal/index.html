@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr. Karin Ohmayer — Computational Research</title>
+  <meta name="description" content="Portfolio of Dr. Karin Ohmayer — Data Science, Complex Systems, Computational Research.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mono: 'IBM Plex Mono', 'Menlo', monospace;
+      --sans: 'IBM Plex Sans', system-ui, sans-serif;
+      --bg: #0c0c0c;
+      --fg: #e8e4df;
+      --fg-dim: #8a8580;
+      --fg-muted: #4a4744;
+      --accent: #c45d3e;
+      --accent-dim: rgba(196, 93, 62, 0.15);
+      --warm: #d4a574;
+      --border: rgba(232, 228, 223, 0.08);
+      --card-bg: rgba(12, 12, 12, 0.75);
+      --ease: cubic-bezier(0.25, 1, 0.5, 1);
+      --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--accent); color: var(--bg); }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── Fractal Canvas ─── */
+    #fractalCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    /* ─── Content layer ─── */
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── Nav ─── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(1.25rem, 3vw, 2.5rem);
+      background: rgba(12, 12, 12, 0.7);
+      backdrop-filter: blur(24px) saturate(1.3);
+      -webkit-backdrop-filter: blur(24px) saturate(1.3);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+    }
+
+    .nav-name {
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-name span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: clamp(1rem, 2vw, 1.75rem);
+    }
+
+    .nav-links a {
+      color: var(--fg-dim);
+      transition: color 0.3s;
+      letter-spacing: 0.03em;
+    }
+
+    .nav-links a:hover { color: var(--fg); }
+
+    .nav-zoom {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Hero ─── */
+    .hero {
+      min-height: 100lvh;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 clamp(1.25rem, 3vw, 2.5rem);
+      padding-bottom: clamp(4rem, 12vh, 8rem);
+    }
+
+    .hero-content { max-width: 680px; }
+
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+      opacity: 0;
+      animation: fadeIn 0.8s 0.3s var(--ease-expo) forwards;
+    }
+
+    .hero-title {
+      font-family: var(--sans);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      opacity: 0;
+      animation: fadeIn 1s 0.5s var(--ease-expo) forwards;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--fg-dim);
+      line-height: 1.6;
+      margin-top: 1.25rem;
+      max-width: 520px;
+      opacity: 0;
+      animation: fadeIn 0.8s 0.7s var(--ease-expo) forwards;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--fg-muted);
+      opacity: 0;
+      animation: fadeIn 0.6s 0.9s var(--ease-expo) forwards;
+    }
+
+    .hero-meta span { color: var(--fg-dim); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 1.5rem;
+      right: clamp(1.25rem, 3vw, 2.5rem);
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--fg-muted);
+      writing-mode: vertical-rl;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0;
+      animation: fadeIn 0.6s 1.2s var(--ease-expo) forwards;
+    }
+
+    .hero-scroll-hint::after {
+      content: '';
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50% { opacity: 0.3; transform: scaleY(0.5); }
+    }
+
+    /* ─── Section base ─── */
+    section {
+      padding: clamp(5rem, 12vh, 10rem) clamp(1.25rem, 3vw, 2.5rem);
+    }
+
+    .section-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .section-desc {
+      color: var(--fg-dim);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      max-width: 560px;
+      margin-top: 1rem;
+    }
+
+    /* ─── Glass cards ─── */
+    .glass {
+      background: var(--card-bg);
+      backdrop-filter: blur(30px) saturate(1.2);
+      -webkit-backdrop-filter: blur(30px) saturate(1.2);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+    }
+
+    /* ─── Reveal ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.9s var(--ease-expo), transform 0.9s var(--ease-expo);
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+    .reveal-d4 { transition-delay: 0.4s; }
+
+    /* ─── About ─── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 3rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: var(--fg-dim);
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .about-stat {
+      padding: 1.5rem;
+    }
+
+    .about-stat-value {
+      font-family: var(--mono);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .about-stat-label {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      color: var(--fg-muted);
+      margin-top: 0.375rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── Research ─── */
+    .research-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    .research-card {
+      padding: 2rem;
+      transition: border-color 0.3s, transform 0.4s var(--ease-expo);
+    }
+
+    .research-card:hover {
+      border-color: rgba(196, 93, 62, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .research-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 0.5rem;
+      background: var(--accent-dim);
+      display: grid;
+      place-items: center;
+      margin-bottom: 1.25rem;
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .research-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .research-card p {
+      font-size: 0.9375rem;
+      color: var(--fg-dim);
+      line-height: 1.6;
+    }
+
+    /* ─── Publications ─── */
+    .pub-list {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .pub-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      align-items: center;
+      transition: background 0.3s;
+    }
+
+    .pub-item:hover { background: rgba(232, 228, 223, 0.02); }
+
+    .pub-year {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .pub-info h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .pub-info p {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--fg-muted);
+      margin-top: 0.25rem;
+    }
+
+    .pub-venue {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      color: var(--fg-dim);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* ─── Teaching / Talks ─── */
+    .talks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    .talk-card {
+      padding: 1.75rem;
+      transition: border-color 0.3s;
+    }
+
+    .talk-card:hover { border-color: rgba(196, 93, 62, 0.2); }
+
+    .talk-card-type {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .talk-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .talk-card p {
+      font-size: 0.875rem;
+      color: var(--fg-dim);
+      line-height: 1.5;
+    }
+
+    .talk-card-meta {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      color: var(--fg-muted);
+      margin-top: 1rem;
+    }
+
+    /* ─── Tools / Stack ─── */
+    .tools-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.625rem;
+      margin-top: 2rem;
+    }
+
+    .tool-tag {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--fg-dim);
+      background: rgba(12, 12, 12, 0.5);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s var(--ease);
+    }
+
+    .tool-tag:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* ─── Contact ─── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 3rem;
+      align-items: start;
+    }
+
+    .contact-text p {
+      color: var(--fg-dim);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      transition: border-color 0.3s, transform 0.3s var(--ease);
+    }
+
+    .contact-link:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .contact-link-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 0.5rem;
+      background: var(--accent-dim);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .contact-link-label {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .contact-link-value {
+      font-weight: 500;
+      font-size: 0.9375rem;
+      margin-top: 0.125rem;
+    }
+
+    .fractal-note {
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .fractal-note p {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      color: var(--fg-muted);
+      line-height: 1.6;
+    }
+
+    .fractal-note span { color: var(--accent); }
+
+    /* ─── Footer ─── */
+    .footer {
+      padding: 2rem clamp(1.25rem, 3vw, 2.5rem);
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.05em;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .pub-item { grid-template-columns: auto 1fr; }
+      .pub-venue { display: none; }
+      .nav-links { display: none; }
+      .nav-zoom { display: none; }
+    }
+
+    /* ─── Reduced motion ─── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fractal Background (WebGL) -->
+  <canvas id="fractalCanvas"></canvas>
+
+  <div class="content">
+
+    <!-- Nav -->
+    <nav class="nav">
+      <div class="nav-name">K.OHMAYER <span>//</span> RESEARCH</div>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#research">Research</a>
+        <a href="#publications">Papers</a>
+        <a href="#talks">Talks</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="nav-zoom" id="zoomDisplay">zoom: 1.00x</div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-content">
+        <p class="hero-label">Computational Research &amp; Data Science</p>
+        <h1 class="hero-title">Structure in chaos.<br>Signal in noise.</h1>
+        <p class="hero-sub">I'm Dr. Karin Ohmayer. I study complex systems, build models that find hidden patterns, and teach machines to see what humans cannot.</p>
+        <div class="hero-meta">
+          <div><span>Affiliation</span><br>ETH Zurich</div>
+          <div><span>Focus</span><br>Complex Systems</div>
+          <div><span>Since</span><br>2014</div>
+        </div>
+      </div>
+      <div class="hero-scroll-hint">Scroll to zoom</div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <div class="section-inner">
+        <p class="section-label reveal">About</p>
+        <h2 class="section-title reveal reveal-d1">Finding order in<br>high-dimensional spaces</h2>
+        <div class="about-grid">
+          <div class="about-text reveal reveal-d2">
+            <p>My work sits at the intersection of applied mathematics, statistical learning, and computational physics. I develop methods that extract structure from noisy, high-dimensional data — from protein folding dynamics to financial market microstructure.</p>
+            <p>Before joining ETH, I worked at the Max Planck Institute for Dynamics and Self-Organization in Gottingen and completed my PhD at TU Munich on topological data analysis of turbulent flows.</p>
+            <p>I believe the fractal geometry behind this page reflects the core of my work: infinite complexity emerging from simple rules, patterns within patterns, structure at every scale.</p>
+          </div>
+          <div class="about-stats reveal reveal-d3">
+            <div class="about-stat glass">
+              <div class="about-stat-value">47</div>
+              <div class="about-stat-label">Publications</div>
+            </div>
+            <div class="about-stat glass">
+              <div class="about-stat-value">3.2k</div>
+              <div class="about-stat-label">Citations</div>
+            </div>
+            <div class="about-stat glass">
+              <div class="about-stat-value">12</div>
+              <div class="about-stat-label">PhD Students</div>
+            </div>
+            <div class="about-stat glass">
+              <div class="about-stat-value">8</div>
+              <div class="about-stat-label">Grants</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Research Areas -->
+    <section id="research">
+      <div class="section-inner">
+        <p class="section-label reveal">Research</p>
+        <h2 class="section-title reveal reveal-d1">Current directions</h2>
+        <p class="section-desc reveal reveal-d2">My group works on fundamental and applied problems across several domains, unified by the thread of discovering latent structure in data.</p>
+        <div class="research-grid">
+          <div class="research-card glass reveal">
+            <div class="research-card-icon">T</div>
+            <h3>Topological Data Analysis</h3>
+            <p>Persistent homology and Mapper algorithms for shape analysis of high-dimensional datasets. Applications in molecular dynamics and neuroscience.</p>
+          </div>
+          <div class="research-card glass reveal reveal-d1">
+            <div class="research-card-icon">G</div>
+            <h3>Graph Neural Networks</h3>
+            <p>Message-passing architectures for learning on irregular domains. Spectral methods on manifolds. Current focus: protein interaction networks.</p>
+          </div>
+          <div class="research-card glass reveal reveal-d2">
+            <div class="research-card-icon">C</div>
+            <h3>Computational Dynamics</h3>
+            <p>Numerical simulation of nonlinear systems. Bifurcation theory, Lyapunov exponents, and chaos quantification in turbulent flows.</p>
+          </div>
+          <div class="research-card glass reveal reveal-d3">
+            <div class="research-card-icon">S</div>
+            <h3>Statistical Learning Theory</h3>
+            <p>High-dimensional regression, kernel methods, and concentration inequalities. Bridging theory and practice in sample-efficient learning.</p>
+          </div>
+          <div class="research-card glass reveal reveal-d2">
+            <div class="research-card-icon">F</div>
+            <h3>Financial Microstructure</h3>
+            <p>Modeling order book dynamics, market impact, and price formation using point processes and Hawkes models.</p>
+          </div>
+          <div class="research-card glass reveal reveal-d3">
+            <div class="research-card-icon">O</div>
+            <h3>Optimal Transport</h3>
+            <p>Wasserstein distances for distributional data. Applications in generative modeling, domain adaptation, and fairness in ML.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Publications -->
+    <section id="publications">
+      <div class="section-inner">
+        <p class="section-label reveal">Selected Publications</p>
+        <h2 class="section-title reveal reveal-d1">Recent papers</h2>
+        <div class="pub-list glass reveal reveal-d2">
+          <div class="pub-item">
+            <div class="pub-year">2026</div>
+            <div class="pub-info">
+              <h3>Persistent Homology of Turbulent Boundary Layers at Scale</h3>
+              <p>K. Ohmayer, L. Brandt, M. Rosti</p>
+            </div>
+            <div class="pub-venue">Nature Physics</div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2025</div>
+            <div class="pub-info">
+              <h3>Spectral Graph Wavelets for Protein Interaction Prediction</h3>
+              <p>K. Ohmayer, T. Chen, A. Borgwardt</p>
+            </div>
+            <div class="pub-venue">ICML 2025</div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2025</div>
+            <div class="pub-info">
+              <h3>Wasserstein Barycenters for Distributional Regression</h3>
+              <p>K. Ohmayer, F. Santambrogio</p>
+            </div>
+            <div class="pub-venue">NeurIPS 2025</div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2024</div>
+            <div class="pub-info">
+              <h3>Bifurcation Detection in Dynamical Systems via Topological Signatures</h3>
+              <p>K. Ohmayer, R. Barrio</p>
+            </div>
+            <div class="pub-venue">SIAM J. Applied Dynamical Systems</div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2024</div>
+            <div class="pub-info">
+              <h3>Hawkes Process Calibration for LOB Dynamics Under Stress</h3>
+              <p>K. Ohmayer, J. Bouchaud</p>
+            </div>
+            <div class="pub-venue">Quantitative Finance</div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2023</div>
+            <div class="pub-info">
+              <h3>High-Dimensional Kernel Regression: Sharp Rates and Adaptivity</h3>
+              <p>K. Ohmayer, S. van de Geer</p>
+            </div>
+            <div class="pub-venue">Annals of Statistics</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Talks -->
+    <section id="talks">
+      <div class="section-inner">
+        <p class="section-label reveal">Talks &amp; Teaching</p>
+        <h2 class="section-title reveal reveal-d1">Sharing knowledge</h2>
+        <div class="talks-grid">
+          <div class="talk-card glass reveal">
+            <div class="talk-card-type">Keynote</div>
+            <h3>The Geometry of Data: Topology Meets Machine Learning</h3>
+            <p>Plenary talk on persistent homology as a feature engineering tool for deep learning pipelines.</p>
+            <div class="talk-card-meta">ICIAM 2025 — Tokyo</div>
+          </div>
+          <div class="talk-card glass reveal reveal-d1">
+            <div class="talk-card-type">Course</div>
+            <h3>Advanced Topics in Computational Data Science</h3>
+            <p>Graduate seminar covering TDA, GNNs, optimal transport, and high-dimensional statistics. 14 weeks.</p>
+            <div class="talk-card-meta">ETH Zurich — Autumn 2025</div>
+          </div>
+          <div class="talk-card glass reveal reveal-d2">
+            <div class="talk-card-type">Invited Talk</div>
+            <h3>Order Book Dynamics as a Point Process</h3>
+            <p>Modeling market microstructure with self-exciting processes. Joint work with EPFL Quantitative Finance Lab.</p>
+            <div class="talk-card-meta">Bachelier Congress 2024 — Rio</div>
+          </div>
+          <div class="talk-card glass reveal reveal-d3">
+            <div class="talk-card-type">Workshop</div>
+            <h3>Hands-On TDA with Python</h3>
+            <p>Two-day intensive workshop using Ripser, Gudhi, and Giotto-TDA. From theory to practice.</p>
+            <div class="talk-card-meta">SciPy 2024 — Austin</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tools -->
+    <section>
+      <div class="section-inner">
+        <p class="section-label reveal">Tools &amp; Stack</p>
+        <h2 class="section-title reveal reveal-d1">What I work with</h2>
+        <div class="tools-wrap reveal reveal-d2">
+          <span class="tool-tag">Python</span>
+          <span class="tool-tag">PyTorch</span>
+          <span class="tool-tag">JAX</span>
+          <span class="tool-tag">Julia</span>
+          <span class="tool-tag">R</span>
+          <span class="tool-tag">C++</span>
+          <span class="tool-tag">CUDA</span>
+          <span class="tool-tag">NetworkX</span>
+          <span class="tool-tag">Ripser</span>
+          <span class="tool-tag">Gudhi</span>
+          <span class="tool-tag">scikit-learn</span>
+          <span class="tool-tag">Pandas</span>
+          <span class="tool-tag">DuckDB</span>
+          <span class="tool-tag">Polars</span>
+          <span class="tool-tag">Matplotlib</span>
+          <span class="tool-tag">Plotly</span>
+          <span class="tool-tag">LaTeX</span>
+          <span class="tool-tag">Git</span>
+          <span class="tool-tag">Docker</span>
+          <span class="tool-tag">Slurm / HPC</span>
+          <span class="tool-tag">Weights & Biases</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+      <div class="section-inner">
+        <p class="section-label reveal">Contact</p>
+        <h2 class="section-title reveal reveal-d1">Let's talk</h2>
+        <div class="contact-grid">
+          <div class="contact-text reveal reveal-d2">
+            <p>I'm always interested in collaborations at the boundary of mathematics, computation, and data. Whether you're a researcher, student, or someone from industry with an interesting problem — reach out.</p>
+            <div class="contact-links">
+              <a href="#" class="contact-link glass">
+                <div class="contact-link-icon">@</div>
+                <div>
+                  <div class="contact-link-label">Email</div>
+                  <div class="contact-link-value">karin.ohmayer@ethz.ch</div>
+                </div>
+              </a>
+              <a href="#" class="contact-link glass">
+                <div class="contact-link-icon">G</div>
+                <div>
+                  <div class="contact-link-label">Google Scholar</div>
+                  <div class="contact-link-value">scholar.google.com/ohmayer</div>
+                </div>
+              </a>
+              <a href="#" class="contact-link glass">
+                <div class="contact-link-icon">GH</div>
+                <div>
+                  <div class="contact-link-label">GitHub</div>
+                  <div class="contact-link-value">github.com/kohmayer</div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="reveal reveal-d3">
+            <div class="fractal-note glass">
+              <p><span>&gt;</span> The Mandelbrot set behind this page is computed live on your GPU via a WebGL fragment shader. As you scroll, you zoom deeper into the fractal — the coordinate <span id="coordDisplay">-0.7436 + 0.1318i</span> — revealing self-similar structures at every scale. Iteration count adapts dynamically for detail. No libraries, no images, just math.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; 2026 Dr. Karin Ohmayer &middot; ETH Zurich &middot; Department of Computer Science &middot; Fractal: live WebGL Mandelbrot</p>
+    </footer>
+
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      // ═══════════════════════════════════════
+      //  WEBGL MANDELBROT FRACTAL BACKGROUND
+      // ═══════════════════════════════════════
+
+      const canvas = document.getElementById('fractalCanvas');
+      const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+
+      if (!gl) {
+        canvas.style.background = '#0c0c0c';
+        console.warn('WebGL not available');
+      } else {
+        initFractal(gl, canvas);
+      }
+
+      function initFractal(gl, canvas) {
+        // ── Shader sources ──
+        const vertSrc = `
+          attribute vec2 a_pos;
+          void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+        `;
+
+        // Non-AI-slop palette: warm earth tones, burnt orange, charcoal, bone white
+        // Inspired by topographic maps, darkroom prints, and natural stone
+        const fragSrc = `
+          precision highp float;
+
+          uniform vec2 u_res;
+          uniform vec2 u_center;
+          uniform float u_zoom;
+          uniform int u_maxIter;
+
+          vec3 palette(float t) {
+            // Hand-tuned palette: charcoal -> burnt sienna -> warm sand -> bone -> charcoal
+            // No purple, no neon, no AI gradients.
+            vec3 c0 = vec3(0.047, 0.047, 0.047);  // near-black
+            vec3 c1 = vec3(0.42, 0.22, 0.11);      // burnt umber
+            vec3 c2 = vec3(0.76, 0.36, 0.22);      // terra cotta
+            vec3 c3 = vec3(0.88, 0.72, 0.52);      // warm sand
+            vec3 c4 = vec3(0.92, 0.88, 0.82);      // bone / parchment
+            vec3 c5 = vec3(0.55, 0.38, 0.24);      // raw sienna
+            vec3 c6 = vec3(0.22, 0.14, 0.09);      // dark earth
+            vec3 c7 = vec3(0.047, 0.047, 0.047);   // back to black
+
+            float s = t * 7.0;
+            if (s < 1.0) return mix(c0, c1, s);
+            if (s < 2.0) return mix(c1, c2, s - 1.0);
+            if (s < 3.0) return mix(c2, c3, s - 2.0);
+            if (s < 4.0) return mix(c3, c4, s - 3.0);
+            if (s < 5.0) return mix(c4, c5, s - 4.0);
+            if (s < 6.0) return mix(c5, c6, s - 5.0);
+            return mix(c6, c7, s - 6.0);
+          }
+
+          void main() {
+            vec2 uv = gl_FragCoord.xy / u_res;
+            float aspect = u_res.x / u_res.y;
+
+            vec2 c = u_center + (uv * 2.0 - 1.0) * vec2(aspect, 1.0) * u_zoom;
+
+            vec2 z = vec2(0.0);
+            int iter = 0;
+            bool escaped = false;
+
+            for (int i = 0; i < 2000; i++) {
+              if (i >= u_maxIter) break;
+              float x2 = z.x * z.x;
+              float y2 = z.y * z.y;
+              if (x2 + y2 > 256.0) {
+                escaped = true;
+                iter = i;
+                break;
+              }
+              z = vec2(x2 - y2 + c.x, 2.0 * z.x * z.y + c.y);
+            }
+
+            if (!escaped) {
+              gl_FragColor = vec4(0.035, 0.035, 0.035, 1.0);
+            } else {
+              // Smooth iteration count (eliminates banding)
+              float sn = float(iter) - log2(log2(z.x * z.x + z.y * z.y)) + 4.0;
+              float t = fract(sn * 0.025 + 0.1);
+              vec3 col = palette(t);
+              // Darken overall to work as background
+              col *= 0.45;
+              gl_FragColor = vec4(col, 1.0);
+            }
+          }
+        `;
+
+        // ── Compile shaders ──
+        function compile(type, src) {
+          const s = gl.createShader(type);
+          gl.shaderSource(s, src);
+          gl.compileShader(s);
+          if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+            console.error(gl.getShaderInfoLog(s));
+            return null;
+          }
+          return s;
+        }
+
+        const prog = gl.createProgram();
+        gl.attachShader(prog, compile(gl.VERTEX_SHADER, vertSrc));
+        gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fragSrc));
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+
+        // ── Full-screen quad ──
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+          -1,-1, 1,-1, -1,1,
+          -1,1,  1,-1,  1,1
+        ]), gl.STATIC_DRAW);
+
+        const posLoc = gl.getAttribLocation(prog, 'a_pos');
+        gl.enableVertexAttribArray(posLoc);
+        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+        // ── Uniforms ──
+        const uRes = gl.getUniformLocation(prog, 'u_res');
+        const uCenter = gl.getUniformLocation(prog, 'u_center');
+        const uZoom = gl.getUniformLocation(prog, 'u_zoom');
+        const uMaxIter = gl.getUniformLocation(prog, 'u_maxIter');
+
+        // ── Fractal params ──
+        // Famous deep zoom coordinate (Seahorse Valley)
+        const targetCenter = [-0.743643887037158, 0.131825904205330];
+        const startZoom = 2.0;
+        const endZoom = 0.000005; // Deepest zoom before float32 artifacts
+
+        // Render at reduced resolution for performance
+        const dprScale = Math.min(devicePixelRatio, 1.5) * 0.6;
+
+        function resize() {
+          canvas.width = Math.floor(innerWidth * dprScale);
+          canvas.height = Math.floor(innerHeight * dprScale);
+          canvas.style.width = innerWidth + 'px';
+          canvas.style.height = innerHeight + 'px';
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          dirty = true;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        // ── Scroll-driven zoom ──
+        const zoomDisplay = document.getElementById('zoomDisplay');
+        const coordDisplay = document.getElementById('coordDisplay');
+        let dirty = true;
+        let currentZoom = startZoom;
+
+        window.addEventListener('scroll', () => { dirty = true; }, { passive: true });
+
+        function render() {
+          if (dirty) {
+            dirty = false;
+
+            const maxScroll = document.body.scrollHeight - innerHeight;
+            const t = maxScroll > 0 ? scrollY / maxScroll : 0;
+
+            // Exponential interpolation for smooth zoom feel
+            currentZoom = startZoom * Math.pow(endZoom / startZoom, t);
+
+            // Dynamically increase iterations as we zoom deeper
+            const maxIter = Math.min(1200, Math.floor(120 + 80 * Math.log2(startZoom / currentZoom)));
+
+            gl.uniform2f(uRes, canvas.width, canvas.height);
+            gl.uniform2f(uCenter, targetCenter[0], targetCenter[1]);
+            gl.uniform1f(uZoom, currentZoom);
+            gl.uniform1i(uMaxIter, maxIter);
+
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+            // Update nav display
+            const zoomFactor = (startZoom / currentZoom).toFixed(0);
+            zoomDisplay.textContent = `zoom: ${Number(zoomFactor).toLocaleString('en')}x`;
+
+            // Update coordinate display
+            const re = targetCenter[0].toFixed(4);
+            const im = targetCenter[1].toFixed(4);
+            coordDisplay.textContent = `${re} + ${im}i`;
+          }
+
+          requestAnimationFrame(render);
+        }
+
+        requestAnimationFrame(render);
+      }
+
+      // ═══════════════════════════════════════
+      //  SCROLL REVEAL
+      // ═══════════════════════════════════════
+
+      const revealObs = new IntersectionObserver(
+        entries => entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            revealObs.unobserve(e.target);
+          }
+        }),
+        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+      );
+
+      document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+      // ═══════════════════════════════════════
+      //  SMOOTH ANCHOR SCROLL
+      // ═══════════════════════════════════════
+
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const target = document.querySelector(a.getAttribute('href'));
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>
