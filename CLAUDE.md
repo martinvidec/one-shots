@@ -30,8 +30,8 @@ Jeder One-Shot bekommt einen eigenen Ordner im Root:
 4. `README.md` im Root aktualisieren — neue Zeile in der Beispiel-Tabelle mit:
    - Laufende Nummer
    - Link zum Ordner: `` [`name/`](./name) ``
-   - Live-Link: `` [Ansehen](https://martinvidec.github.io/one-shots/<name>/) ``
-   - Kurzbeschreibung
+   - Live-Link als voller URL (kein Linktext): `https://martinvidec.github.io/one-shots/<name>/`
+   - Der verwendete Prompt als Text (nicht die Beschreibung)
 5. Committen und auf `main` pushen — GitHub Pages deployt automatisch via `.github/workflows/pages.yml`
 
 ## GitHub Pages

@@ -8,9 +8,9 @@ Ein Prompt rein, eine fertige Webseite raus. Das Ziel ist es zu zeigen, was mit 
 
 ## Beispiele
 
-| # | Ordner | Live | Beschreibung |
-|---|--------|------|-------------|
-| 1 | [`portfolio/`](./portfolio) | [Ansehen](https://martinvidec.github.io/one-shots/portfolio/) | Portfolio-Webseite für eine Webdesignerin — Dark/Light Mode, Scroll-Animationen, Custom Cursor, responsive |
+| # | Ordner | Live | Prompt |
+|---|--------|------|--------|
+| 1 | [`portfolio/`](./portfolio) | https://martinvidec.github.io/one-shots/portfolio/ | Erstelle bitte eine Portfoliowebseite für einen Webdesigner. Verwende state-of-the-art clientside JS, CSS und HTML. |
 
 ## Struktur
 
