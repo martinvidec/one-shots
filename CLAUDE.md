@@ -27,4 +27,16 @@ Jeder One-Shot bekommt einen eigenen Ordner im Root:
 1. Ordner im Root erstellen (kebab-case, beschreibender Name)
 2. `PROMPT.md` mit dem verwendeten Prompt anlegen
 3. Ergebnis als `index.html` (+ Assets falls nötig) ablegen
-4. `README.md` im Root aktualisieren (Tabelle der Beispiele)
+4. `README.md` im Root aktualisieren — neue Zeile in der Beispiel-Tabelle mit:
+   - Laufende Nummer
+   - Link zum Ordner: `` [`name/`](./name) ``
+   - Live-Link: `` [Ansehen](https://martinvidec.github.io/one-shots/<name>/) ``
+   - Kurzbeschreibung
+5. Committen und auf `main` pushen — GitHub Pages deployt automatisch via `.github/workflows/pages.yml`
+
+## GitHub Pages
+
+- Pages ist aktiviert auf `main` Branch, Root `/`
+- Deploy läuft automatisch per GitHub Actions bei jedem Push auf `main`
+- Jeder One-Shot ist direkt erreichbar unter: `https://martinvidec.github.io/one-shots/<ordnername>/`
+- Nach dem Push dauert es ca. 1-2 Minuten bis die Seite live ist
