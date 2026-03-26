@@ -15,14 +15,15 @@
       --mono: 'IBM Plex Mono', 'Menlo', monospace;
       --sans: 'IBM Plex Sans', system-ui, sans-serif;
       --bg: #0c0c0c;
-      --fg: #e8e4df;
-      --fg-dim: #8a8580;
-      --fg-muted: #4a4744;
-      --accent: #c45d3e;
-      --accent-dim: rgba(196, 93, 62, 0.15);
+      --fg: #f0eeeb;
+      --fg-dim: #a09a94;
+      --fg-muted: #5a5550;
+      --accent: #5ccfcf;
+      --accent-dim: rgba(92, 207, 207, 0.12);
+      --accent-bright: #7eeaea;
       --warm: #d4a574;
       --border: rgba(232, 228, 223, 0.08);
-      --card-bg: rgba(12, 12, 12, 0.75);
+      --card-bg: rgba(12, 12, 12, 0.82);
       --ease: cubic-bezier(0.25, 1, 0.5, 1);
       --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -102,7 +103,7 @@
     .nav-zoom {
       font-family: var(--mono);
       font-size: 0.625rem;
-      color: var(--fg-muted);
+      color: var(--accent);
       letter-spacing: 0.05em;
     }
 
@@ -113,6 +114,13 @@
       align-items: flex-end;
       padding: 0 clamp(1.25rem, 3vw, 2.5rem);
       padding-bottom: clamp(4rem, 12vh, 8rem);
+      background: linear-gradient(
+        180deg,
+        rgba(12,12,12,0.5) 0%,
+        rgba(12,12,12,0.2) 40%,
+        rgba(12,12,12,0.4) 70%,
+        rgba(12,12,12,0.85) 100%
+      );
     }
 
     .hero-content { max-width: 680px; }
@@ -126,7 +134,6 @@
       color: var(--accent);
       margin-bottom: 1.25rem;
       opacity: 0;
-      animation: fadeIn 0.8s 0.3s var(--ease-expo) forwards;
     }
 
     .hero-title {
@@ -136,17 +143,16 @@
       letter-spacing: -0.03em;
       line-height: 1.1;
       opacity: 0;
-      animation: fadeIn 1s 0.5s var(--ease-expo) forwards;
     }
 
     .hero-sub {
       font-size: clamp(1rem, 2vw, 1.25rem);
-      color: var(--fg-dim);
+      color: var(--fg);
       line-height: 1.6;
       margin-top: 1.25rem;
       max-width: 520px;
       opacity: 0;
-      animation: fadeIn 0.8s 0.7s var(--ease-expo) forwards;
+      font-weight: 300;
     }
 
     .hero-meta {
@@ -155,9 +161,8 @@
       margin-top: 2rem;
       font-family: var(--mono);
       font-size: 0.75rem;
-      color: var(--fg-muted);
+      color: var(--fg-dim);
       opacity: 0;
-      animation: fadeIn 0.6s 0.9s var(--ease-expo) forwards;
     }
 
     .hero-meta span { color: var(--fg-dim); }
@@ -166,6 +171,12 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Hero animations — no custom properties in shorthand */
+    .hero-label  { animation: fadeIn 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .hero-title  { animation: fadeIn 1.0s 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .hero-sub    { animation: fadeIn 0.8s 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .hero-meta   { animation: fadeIn 0.6s 0.9s cubic-bezier(0.16,1,0.3,1) forwards; }
 
     .hero-scroll-hint {
       position: absolute;
@@ -181,7 +192,7 @@
       align-items: center;
       gap: 0.75rem;
       opacity: 0;
-      animation: fadeIn 0.6s 1.2s var(--ease-expo) forwards;
+      animation: fadeIn 0.6s 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
     }
 
     .hero-scroll-hint::after {
@@ -200,6 +211,16 @@
     /* ─── Section base ─── */
     section {
       padding: clamp(5rem, 12vh, 10rem) clamp(1.25rem, 3vw, 2.5rem);
+    }
+
+    /* Dark vignette behind each section for text readability */
+    section:not(.hero) {
+      background: radial-gradient(
+        ellipse 120% 100% at 50% 50%,
+        rgba(12, 12, 12, 0.88) 0%,
+        rgba(12, 12, 12, 0.65) 60%,
+        transparent 100%
+      );
     }
 
     .section-inner {
@@ -225,11 +246,12 @@
     }
 
     .section-desc {
-      color: var(--fg-dim);
+      color: var(--fg);
       font-size: 1.0625rem;
       line-height: 1.7;
       max-width: 560px;
       margin-top: 1rem;
+      font-weight: 300;
     }
 
     /* ─── Glass cards ─── */
@@ -264,10 +286,11 @@
     }
 
     .about-text p {
-      color: var(--fg-dim);
+      color: var(--fg);
       font-size: 1rem;
       line-height: 1.8;
       margin-bottom: 1rem;
+      font-weight: 300;
     }
 
     .about-stats {
@@ -471,9 +494,10 @@
     }
 
     .contact-text p {
-      color: var(--fg-dim);
+      color: var(--fg);
       font-size: 1rem;
       line-height: 1.7;
+      font-weight: 300;
     }
 
     .contact-links {
@@ -547,6 +571,7 @@
       color: var(--fg-muted);
       letter-spacing: 0.05em;
       border-top: 1px solid var(--border);
+      background: rgba(12, 12, 12, 0.9);
     }
 
     /* ─── Responsive ─── */
@@ -854,199 +879,10 @@
       'use strict';
 
       // ═══════════════════════════════════════
-      //  WEBGL MANDELBROT FRACTAL BACKGROUND
+      //  UI SETUP (runs first, never blocked by WebGL)
       // ═══════════════════════════════════════
 
-      const canvas = document.getElementById('fractalCanvas');
-      const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
-
-      if (!gl) {
-        canvas.style.background = '#0c0c0c';
-        console.warn('WebGL not available');
-      } else {
-        initFractal(gl, canvas);
-      }
-
-      function initFractal(gl, canvas) {
-        // ── Shader sources ──
-        const vertSrc = `
-          attribute vec2 a_pos;
-          void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
-        `;
-
-        // Non-AI-slop palette: warm earth tones, burnt orange, charcoal, bone white
-        // Inspired by topographic maps, darkroom prints, and natural stone
-        const fragSrc = `
-          precision highp float;
-
-          uniform vec2 u_res;
-          uniform vec2 u_center;
-          uniform float u_zoom;
-          uniform int u_maxIter;
-
-          vec3 palette(float t) {
-            // Hand-tuned palette: charcoal -> burnt sienna -> warm sand -> bone -> charcoal
-            // No purple, no neon, no AI gradients.
-            vec3 c0 = vec3(0.047, 0.047, 0.047);  // near-black
-            vec3 c1 = vec3(0.42, 0.22, 0.11);      // burnt umber
-            vec3 c2 = vec3(0.76, 0.36, 0.22);      // terra cotta
-            vec3 c3 = vec3(0.88, 0.72, 0.52);      // warm sand
-            vec3 c4 = vec3(0.92, 0.88, 0.82);      // bone / parchment
-            vec3 c5 = vec3(0.55, 0.38, 0.24);      // raw sienna
-            vec3 c6 = vec3(0.22, 0.14, 0.09);      // dark earth
-            vec3 c7 = vec3(0.047, 0.047, 0.047);   // back to black
-
-            float s = t * 7.0;
-            if (s < 1.0) return mix(c0, c1, s);
-            if (s < 2.0) return mix(c1, c2, s - 1.0);
-            if (s < 3.0) return mix(c2, c3, s - 2.0);
-            if (s < 4.0) return mix(c3, c4, s - 3.0);
-            if (s < 5.0) return mix(c4, c5, s - 4.0);
-            if (s < 6.0) return mix(c5, c6, s - 5.0);
-            return mix(c6, c7, s - 6.0);
-          }
-
-          void main() {
-            vec2 uv = gl_FragCoord.xy / u_res;
-            float aspect = u_res.x / u_res.y;
-
-            vec2 c = u_center + (uv * 2.0 - 1.0) * vec2(aspect, 1.0) * u_zoom;
-
-            vec2 z = vec2(0.0);
-            int iter = 0;
-            bool escaped = false;
-
-            for (int i = 0; i < 2000; i++) {
-              if (i >= u_maxIter) break;
-              float x2 = z.x * z.x;
-              float y2 = z.y * z.y;
-              if (x2 + y2 > 256.0) {
-                escaped = true;
-                iter = i;
-                break;
-              }
-              z = vec2(x2 - y2 + c.x, 2.0 * z.x * z.y + c.y);
-            }
-
-            if (!escaped) {
-              gl_FragColor = vec4(0.035, 0.035, 0.035, 1.0);
-            } else {
-              // Smooth iteration count (eliminates banding)
-              float sn = float(iter) - log2(log2(z.x * z.x + z.y * z.y)) + 4.0;
-              float t = fract(sn * 0.025 + 0.1);
-              vec3 col = palette(t);
-              // Darken overall to work as background
-              col *= 0.45;
-              gl_FragColor = vec4(col, 1.0);
-            }
-          }
-        `;
-
-        // ── Compile shaders ──
-        function compile(type, src) {
-          const s = gl.createShader(type);
-          gl.shaderSource(s, src);
-          gl.compileShader(s);
-          if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-            console.error(gl.getShaderInfoLog(s));
-            return null;
-          }
-          return s;
-        }
-
-        const prog = gl.createProgram();
-        gl.attachShader(prog, compile(gl.VERTEX_SHADER, vertSrc));
-        gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fragSrc));
-        gl.linkProgram(prog);
-        gl.useProgram(prog);
-
-        // ── Full-screen quad ──
-        const buf = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-          -1,-1, 1,-1, -1,1,
-          -1,1,  1,-1,  1,1
-        ]), gl.STATIC_DRAW);
-
-        const posLoc = gl.getAttribLocation(prog, 'a_pos');
-        gl.enableVertexAttribArray(posLoc);
-        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
-
-        // ── Uniforms ──
-        const uRes = gl.getUniformLocation(prog, 'u_res');
-        const uCenter = gl.getUniformLocation(prog, 'u_center');
-        const uZoom = gl.getUniformLocation(prog, 'u_zoom');
-        const uMaxIter = gl.getUniformLocation(prog, 'u_maxIter');
-
-        // ── Fractal params ──
-        // Famous deep zoom coordinate (Seahorse Valley)
-        const targetCenter = [-0.743643887037158, 0.131825904205330];
-        const startZoom = 2.0;
-        const endZoom = 0.000005; // Deepest zoom before float32 artifacts
-
-        // Render at reduced resolution for performance
-        const dprScale = Math.min(devicePixelRatio, 1.5) * 0.6;
-
-        function resize() {
-          canvas.width = Math.floor(innerWidth * dprScale);
-          canvas.height = Math.floor(innerHeight * dprScale);
-          canvas.style.width = innerWidth + 'px';
-          canvas.style.height = innerHeight + 'px';
-          gl.viewport(0, 0, canvas.width, canvas.height);
-          dirty = true;
-        }
-
-        window.addEventListener('resize', resize);
-        resize();
-
-        // ── Scroll-driven zoom ──
-        const zoomDisplay = document.getElementById('zoomDisplay');
-        const coordDisplay = document.getElementById('coordDisplay');
-        let dirty = true;
-        let currentZoom = startZoom;
-
-        window.addEventListener('scroll', () => { dirty = true; }, { passive: true });
-
-        function render() {
-          if (dirty) {
-            dirty = false;
-
-            const maxScroll = document.body.scrollHeight - innerHeight;
-            const t = maxScroll > 0 ? scrollY / maxScroll : 0;
-
-            // Exponential interpolation for smooth zoom feel
-            currentZoom = startZoom * Math.pow(endZoom / startZoom, t);
-
-            // Dynamically increase iterations as we zoom deeper
-            const maxIter = Math.min(1200, Math.floor(120 + 80 * Math.log2(startZoom / currentZoom)));
-
-            gl.uniform2f(uRes, canvas.width, canvas.height);
-            gl.uniform2f(uCenter, targetCenter[0], targetCenter[1]);
-            gl.uniform1f(uZoom, currentZoom);
-            gl.uniform1i(uMaxIter, maxIter);
-
-            gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-            // Update nav display
-            const zoomFactor = (startZoom / currentZoom).toFixed(0);
-            zoomDisplay.textContent = `zoom: ${Number(zoomFactor).toLocaleString('en')}x`;
-
-            // Update coordinate display
-            const re = targetCenter[0].toFixed(4);
-            const im = targetCenter[1].toFixed(4);
-            coordDisplay.textContent = `${re} + ${im}i`;
-          }
-
-          requestAnimationFrame(render);
-        }
-
-        requestAnimationFrame(render);
-      }
-
-      // ═══════════════════════════════════════
-      //  SCROLL REVEAL
-      // ═══════════════════════════════════════
-
+      // Scroll reveal
       const revealObs = new IntersectionObserver(
         entries => entries.forEach(e => {
           if (e.isIntersecting) {
@@ -1054,15 +890,11 @@
             revealObs.unobserve(e.target);
           }
         }),
-        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+        { threshold: 0.08, rootMargin: '0px 0px -30px 0px' }
       );
-
       document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-      // ═══════════════════════════════════════
-      //  SMOOTH ANCHOR SCROLL
-      // ═══════════════════════════════════════
-
+      // Smooth anchor scroll
       document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', e => {
           e.preventDefault();
@@ -1070,6 +902,146 @@
           if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       });
+
+      // ═══════════════════════════════════════
+      //  WEBGL MANDELBROT FRACTAL BACKGROUND
+      // ═══════════════════════════════════════
+
+      try {
+        const canvas = document.getElementById('fractalCanvas');
+        const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+        if (!gl) throw new Error('No WebGL');
+
+        // Vertex shader
+        const VERT = `
+attribute vec2 a_pos;
+void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+`;
+        // Fragment shader — NO dynamic break, NO uniform in loop condition.
+        // Uses fixed 300 iterations with step() to mask completed pixels.
+        // This is the most compatible approach across all WebGL/ANGLE backends.
+        const FRAG = `
+precision highp float;
+uniform vec2 u_res;
+uniform vec2 u_center;
+uniform float u_zoom;
+uniform float u_maxIter;
+
+vec3 pal(float t) {
+  // Warm earth: charcoal -> burnt orange -> sand -> cream -> rust
+  return vec3(0.52,0.38,0.26) + vec3(0.48,0.40,0.32) *
+    cos(6.28318 * (vec3(1.0,0.7,0.5) * t + vec3(0.0,0.12,0.30)));
+}
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / u_res;
+  float ar = u_res.x / u_res.y;
+  vec2 p = u_center + (uv * 2.0 - 1.0) * vec2(ar, 1.0) * u_zoom;
+
+  float zr = 0.0;
+  float zi = 0.0;
+  float n = 0.0;
+
+  for (int i = 0; i < 400; i++) {
+    float zr2 = zr * zr;
+    float zi2 = zi * zi;
+    // step: only iterate if not yet escaped AND under maxIter
+    float mask = step(zr2 + zi2, 4.0) * step(n, u_maxIter);
+    zi = mask * (2.0 * zr * zi + p.y) + (1.0 - mask) * zi;
+    zr = mask * (zr2 - zi2 + p.x) + (1.0 - mask) * zr;
+    n += mask;
+  }
+
+  float mag2 = zr * zr + zi * zi;
+  if (mag2 <= 4.0) {
+    gl_FragColor = vec4(0.03, 0.03, 0.03, 1.0);
+  } else {
+    float sn = n - log2(log2(mag2)) + 4.0;
+    vec3 col = pal(fract(sn * 0.055)) * 0.85;
+    gl_FragColor = vec4(col, 1.0);
+  }
+}
+`;
+
+        function makeShader(type, src) {
+          const s = gl.createShader(type);
+          gl.shaderSource(s, src);
+          gl.compileShader(s);
+          if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+            const err = gl.getShaderInfoLog(s);
+            document.getElementById('zoomDisplay').textContent = 'shader err';
+            throw new Error(err);
+          }
+          return s;
+        }
+
+        const prog = gl.createProgram();
+        gl.attachShader(prog, makeShader(gl.VERTEX_SHADER, VERT));
+        gl.attachShader(prog, makeShader(gl.FRAGMENT_SHADER, FRAG));
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+          throw new Error('Link: ' + gl.getProgramInfoLog(prog));
+        }
+        gl.useProgram(prog);
+
+        // Full-screen quad
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+        const posLoc = gl.getAttribLocation(prog, 'a_pos');
+        gl.enableVertexAttribArray(posLoc);
+        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+        const uRes = gl.getUniformLocation(prog, 'u_res');
+        const uCenter = gl.getUniformLocation(prog, 'u_center');
+        const uZoom = gl.getUniformLocation(prog, 'u_zoom');
+        const uMaxIter = gl.getUniformLocation(prog, 'u_maxIter');
+
+        // Seahorse Valley
+        const cx = -0.743643887037158, cy = 0.131825904205330;
+        const startZoom = 2.0, endZoom = 0.00005;
+        const scale = Math.min(devicePixelRatio, 2) * 0.65;
+        let dirty = true;
+
+        function resize() {
+          canvas.width = Math.floor(innerWidth * scale);
+          canvas.height = Math.floor(innerHeight * scale);
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          dirty = true;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+        const zoomEl = document.getElementById('zoomDisplay');
+        const coordEl = document.getElementById('coordDisplay');
+        window.addEventListener('scroll', () => { dirty = true; }, { passive: true });
+
+        function render() {
+          if (dirty) {
+            dirty = false;
+            const maxScroll = document.body.scrollHeight - innerHeight;
+            const t = maxScroll > 0 ? scrollY / maxScroll : 0;
+            const zoom = startZoom * Math.pow(endZoom / startZoom, t);
+            // u_maxIter is float now — increase with zoom depth
+            const mi = Math.min(390.0, 80.0 + 50.0 * Math.log2(startZoom / zoom));
+
+            gl.uniform2f(uRes, canvas.width, canvas.height);
+            gl.uniform2f(uCenter, cx, cy);
+            gl.uniform1f(uZoom, zoom);
+            gl.uniform1f(uMaxIter, mi);
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+            if (zoomEl) zoomEl.textContent = 'zoom: ' + Math.round(startZoom / zoom).toLocaleString('en') + 'x';
+            if (coordEl) coordEl.textContent = cx.toFixed(4) + ' + ' + cy.toFixed(4) + 'i';
+          }
+          requestAnimationFrame(render);
+        }
+        requestAnimationFrame(render);
+
+      } catch (err) {
+        console.warn('Fractal init failed:', err);
+        const d = document.getElementById('zoomDisplay');
+        if (d) d.textContent = String(err).slice(0, 60);
+      }
 
     })();
   </script>
