@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marco Velardi — #27 — Formula 1 Driver</title>
+  <meta name="description" content="Official website of Marco Velardi, Formula 1 racing driver. The Driver. The Man.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'Manrope', system-ui, sans-serif;
+      --red: #e4032e;
+      --red-dark: #b8021f;
+      --red-glow: rgba(228, 3, 46, 0.3);
+      --navy: #000016;
+      --navy-light: #0a0a2a;
+      --text: #ffffff;
+      --text-dim: rgba(255,255,255,0.55);
+      --text-muted: rgba(255,255,255,0.3);
+      --border: rgba(255,255,255,0.08);
+      --ease: cubic-bezier(0.25, 1, 0.5, 1);
+      --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--navy);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--red); color: #fff; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+    /* ─── Loading Screen ─── */
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.5rem;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-number {
+      font-family: var(--font-display);
+      font-size: clamp(8rem, 25vw, 16rem);
+      line-height: 1;
+      color: var(--red);
+      opacity: 0;
+      transform: scale(0.8);
+      animation: loaderReveal 0.8s 0.2s var(--ease-expo) forwards;
+    }
+
+    .loader-bar {
+      width: 120px;
+      height: 2px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loader-bar-fill {
+      height: 100%;
+      background: var(--red);
+      border-radius: 2px;
+      animation: loaderFill 1.5s 0.3s var(--ease-expo) forwards;
+      width: 0;
+    }
+
+    @keyframes loaderReveal {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes loaderFill {
+      to { width: 100%; }
+    }
+
+    /* ─── Navigation ─── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(1.5rem, 4vw, 3rem);
+      background: rgba(0, 0, 22, 0.85);
+      backdrop-filter: blur(20px) saturate(1.5);
+      -webkit-backdrop-filter: blur(20px) saturate(1.5);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-logo span { color: var(--red); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 2.5vw, 2rem);
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: var(--red);
+      transition: width 0.3s var(--ease-expo);
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-social {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .nav-social a {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--text-muted);
+      transition: color 0.3s, background 0.3s;
+    }
+
+    .nav-social a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .nav-social svg { width: 16px; height: 16px; }
+
+    .menu-toggle {
+      display: none;
+      width: 28px;
+      height: 20px;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .menu-toggle span {
+      display: block;
+      height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: all 0.3s var(--ease-expo);
+      transform-origin: center;
+    }
+
+    .menu-toggle.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+    .menu-toggle.active span:nth-child(2) { opacity: 0; }
+    .menu-toggle.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+    /* ─── Hero ─── */
+    .hero {
+      position: relative;
+      min-height: 100lvh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      filter: brightness(0.35) contrast(1.1) saturate(1.2);
+    }
+
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg,
+        rgba(0,0,22,0.3) 0%,
+        rgba(0,0,22,0.1) 40%,
+        rgba(0,0,22,0.6) 70%,
+        var(--navy) 100%
+      );
+    }
+
+    .hero-red-line {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 2px;
+      height: 0;
+      background: var(--red);
+      z-index: 2;
+      animation: redLineDrop 1.2s 1.8s var(--ease-expo) forwards;
+    }
+
+    @keyframes redLineDrop {
+      to { height: 40%; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      padding: 0 clamp(1.5rem, 4vw, 3rem);
+      padding-bottom: clamp(3rem, 8vh, 6rem);
+      width: 100%;
+    }
+
+    .hero-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 2s var(--ease-expo) forwards;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 14vw, 12rem);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      opacity: 0;
+      animation: fadeUp 1s 2.2s var(--ease-expo) forwards;
+    }
+
+    .hero-title .first-name { color: var(--text-dim); }
+
+    .hero-subtitle {
+      font-size: clamp(0.9375rem, 1.8vw, 1.25rem);
+      color: var(--text-dim);
+      margin-top: 1.5rem;
+      max-width: 500px;
+      line-height: 1.6;
+      opacity: 0;
+      animation: fadeUp 0.8s 2.4s var(--ease-expo) forwards;
+    }
+
+    .hero-number {
+      position: absolute;
+      right: clamp(1.5rem, 5vw, 5rem);
+      bottom: clamp(3rem, 8vh, 6rem);
+      font-family: var(--font-display);
+      font-size: clamp(8rem, 20vw, 18rem);
+      line-height: 1;
+      color: rgba(255,255,255,0.03);
+      z-index: 1;
+      user-select: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      opacity: 0;
+      animation: fadeUp 0.6s 2.8s var(--ease-expo) forwards;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--red), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50% { opacity: 0.3; transform: scaleY(0.5); }
+    }
+
+    /* ─── Reveal animation ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.9s var(--ease-expo), transform 0.9s var(--ease-expo);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+    .reveal-d4 { transition-delay: 0.4s; }
+
+    /* ─── Section base ─── */
+    section { padding: clamp(4rem, 10vh, 8rem) 0; }
+
+    .container {
+      width: min(1200px, 100% - 3rem);
+      margin-inline: auto;
+    }
+
+    .section-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--red);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+
+    /* ─── Stats ─── */
+    .stats {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.01);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+
+    .stat { text-align: center; padding: 2rem 0; }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 5rem);
+      line-height: 1;
+      color: var(--red);
+    }
+
+    .stat-label {
+      font-size: 0.8125rem;
+      color: var(--text-dim);
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+
+    /* ─── The Driver ─── */
+    .driver-section {
+      background: linear-gradient(180deg, var(--navy) 0%, var(--navy-light) 100%);
+    }
+
+    .driver-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: center;
+      margin-top: 3rem;
+    }
+
+    .driver-image {
+      position: relative;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+    }
+
+    .driver-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.7) contrast(1.1);
+      transition: transform 0.7s var(--ease-expo), filter 0.7s;
+    }
+
+    .driver-image:hover img {
+      transform: scale(1.04);
+      filter: brightness(0.8) contrast(1.1);
+    }
+
+    .driver-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,22,0.7) 100%);
+      pointer-events: none;
+    }
+
+    .driver-image .image-caption {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 2;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .driver-text h3 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: 0.02em;
+      margin-bottom: 1.5rem;
+    }
+
+    .driver-text p {
+      color: var(--text-dim);
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .driver-text p:last-of-type { margin-bottom: 2rem; }
+
+    /* ─── Helmet Showcase ─── */
+    .helmets {
+      background: var(--navy-light);
+      overflow: hidden;
+    }
+
+    .helmet-carousel {
+      display: flex;
+      gap: 2rem;
+      margin-top: 3rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding: 1rem 0 2rem;
+    }
+
+    .helmet-carousel::-webkit-scrollbar { display: none; }
+
+    .helmet-card {
+      flex: 0 0 min(340px, 80vw);
+      scroll-snap-align: center;
+      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      overflow: hidden;
+      transition: transform 0.5s var(--ease-expo), border-color 0.5s;
+    }
+
+    .helmet-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(228, 3, 46, 0.2);
+    }
+
+    .helmet-card-image {
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .helmet-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.6) saturate(1.3);
+      transition: transform 0.7s var(--ease-expo);
+    }
+
+    .helmet-card:hover .helmet-card-image img { transform: scale(1.06); }
+
+    .helmet-card-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0,0,22,0.6) 0%, transparent 50%);
+    }
+
+    .helmet-card-info {
+      padding: 1.5rem;
+    }
+
+    .helmet-card-year {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--red);
+      line-height: 1;
+    }
+
+    .helmet-card-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .helmet-card-desc {
+      font-size: 0.8125rem;
+      color: var(--text-dim);
+      margin-top: 0.375rem;
+    }
+
+    /* ─── Timeline / Career ─── */
+    .career {
+      position: relative;
+    }
+
+    .career::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, var(--border) 10%, var(--border) 90%, transparent);
+    }
+
+    .career-header { text-align: center; margin-bottom: 4rem; }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content { grid-column: 1; text-align: right; }
+    .timeline-item:nth-child(odd) .timeline-spacer { grid-column: 3; }
+
+    .timeline-item:nth-child(even) .timeline-content { grid-column: 3; }
+    .timeline-item:nth-child(even) .timeline-spacer { grid-column: 1; }
+
+    .timeline-dot {
+      grid-column: 2;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--red);
+      border: 3px solid var(--navy);
+      box-shadow: 0 0 0 2px var(--red);
+      z-index: 2;
+    }
+
+    .timeline-content {
+      padding: 1.5rem 0;
+    }
+
+    .timeline-year {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      color: var(--red);
+      line-height: 1;
+    }
+
+    .timeline-title {
+      font-weight: 700;
+      font-size: 1.0625rem;
+      margin-top: 0.25rem;
+    }
+
+    .timeline-desc {
+      color: var(--text-dim);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* ─── Gallery ─── */
+    .gallery {
+      background: var(--navy-light);
+      overflow: hidden;
+    }
+
+    .gallery-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 1rem;
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: 1rem;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .gallery-item:nth-child(1) { grid-column: 1 / 3; grid-row: 1 / 3; }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      aspect-ratio: 16/10;
+      filter: brightness(0.65) contrast(1.1) saturate(1.1);
+      transition: transform 0.7s var(--ease-expo), filter 0.7s;
+    }
+
+    .gallery-item:nth-child(1) img { aspect-ratio: auto; height: 100%; }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+      filter: brightness(0.75) contrast(1.1) saturate(1.1);
+    }
+
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,22,0.8) 100%);
+      pointer-events: none;
+    }
+
+    .gallery-item-info {
+      position: absolute;
+      bottom: 1.25rem;
+      left: 1.25rem;
+      z-index: 2;
+    }
+
+    .gallery-item-location {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .gallery-item-date {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.125rem;
+    }
+
+    /* ─── Life Section (Tabs) ─── */
+    .life-section { background: var(--navy); }
+
+    .life-tabs {
+      display: flex;
+      gap: 0;
+      margin-top: 2rem;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .life-tabs::-webkit-scrollbar { display: none; }
+
+    .life-tab {
+      padding: 1rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.3s, border-color 0.3s;
+      cursor: pointer;
+    }
+
+    .life-tab:hover { color: var(--text-dim); }
+    .life-tab.active { color: var(--text); border-bottom-color: var(--red); }
+
+    .life-panels { margin-top: 3rem; }
+
+    .life-panel {
+      display: none;
+      gap: clamp(2rem, 4vw, 4rem);
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+
+    .life-panel.active { display: grid; }
+
+    .life-panel-image {
+      border-radius: 1.5rem;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+
+    .life-panel-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.6) contrast(1.1) saturate(1.2);
+    }
+
+    .life-panel-text h3 {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      margin-bottom: 1rem;
+    }
+
+    .life-panel-text p {
+      color: var(--text-dim);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    /* ─── CTA / Partners ─── */
+    .partners {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .partners-logos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 3rem;
+      opacity: 0.3;
+    }
+
+    .partner-logo {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      transition: opacity 0.3s, color 0.3s;
+    }
+
+    .partner-logo:hover { opacity: 1; color: var(--text); }
+
+    /* ─── Footer ─── */
+    .footer {
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+    }
+
+    .footer-logo span { color: var(--red); }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-copy {
+      width: 100%;
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── CTA Button ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 2rem;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      transition: all 0.3s var(--ease-expo);
+      letter-spacing: 0.03em;
+    }
+
+    .btn-red {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .btn-red:hover {
+      background: var(--red-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--red-glow);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--red);
+      background: rgba(228, 3, 46, 0.08);
+    }
+
+    .btn svg { width: 16px; height: 16px; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 1024px) {
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item:nth-child(1) { grid-column: 1 / -1; grid-row: auto; }
+      .timeline-item { grid-template-columns: auto 1fr; gap: 1.5rem; }
+      .timeline-item .timeline-spacer { display: none; }
+      .timeline-item:nth-child(odd) .timeline-content,
+      .timeline-item:nth-child(even) .timeline-content { grid-column: 2; text-align: left; }
+      .timeline-dot { grid-column: 1; }
+      .career::before { left: 7px; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-social { display: none; }
+      .menu-toggle { display: flex; }
+
+      .mobile-nav {
+        position: fixed;
+        inset: 0;
+        z-index: 99;
+        background: rgba(0, 0, 22, 0.97);
+        backdrop-filter: blur(30px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.5s var(--ease-expo);
+      }
+
+      .mobile-nav.open { transform: translateX(0); }
+
+      .mobile-nav a {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        letter-spacing: 0.1em;
+        color: var(--text-dim);
+        transition: color 0.3s;
+      }
+
+      .mobile-nav a:hover { color: var(--red); }
+
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .driver-grid { grid-template-columns: 1fr; }
+      .driver-image { order: -1; }
+      .life-panel { grid-template-columns: 1fr; }
+      .life-panel-image { order: -1; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item:nth-child(1) { grid-column: auto; }
+      .hero-number { display: none; }
+    }
+
+    /* ─── Reduced Motion ─── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .loader { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div class="loader" id="loader">
+    <div class="loader-number">27</div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#driver">The Driver</a>
+    <a href="#career">Career</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#life">Life</a>
+    <a href="#partners">Partners</a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="#" class="nav-logo">VELARDI<span>27</span></a>
+    <div class="nav-links">
+      <a href="#driver">The Driver</a>
+      <a href="#career">Career</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#life">Life</a>
+      <a href="#partners">Partners</a>
+    </div>
+    <div class="nav-social">
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg></a>
+      <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="https://picsum.photos/id/133/2742/1828" alt="Racing atmosphere" loading="eager">
+    </div>
+    <div class="hero-red-line"></div>
+    <div class="hero-content">
+      <p class="hero-label">Formula 1 Driver</p>
+      <h1 class="hero-title">
+        <span class="first-name">MARCO</span><br>VELARDI
+      </h1>
+      <p class="hero-subtitle">Born to race. Driven by passion. 12 seasons in Formula 1 — and counting.</p>
+    </div>
+    <div class="hero-number">27</div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat reveal">
+          <div class="stat-value" data-count="187">0</div>
+          <div class="stat-label">Grand Prix</div>
+        </div>
+        <div class="stat reveal reveal-d1">
+          <div class="stat-value" data-count="52">0</div>
+          <div class="stat-label">Podiums</div>
+        </div>
+        <div class="stat reveal reveal-d2">
+          <div class="stat-value" data-count="14">0</div>
+          <div class="stat-label">Victories</div>
+        </div>
+        <div class="stat reveal reveal-d3">
+          <div class="stat-value" data-count="31">0</div>
+          <div class="stat-label">Pole Positions</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Driver -->
+  <section class="driver-section" id="driver">
+    <div class="container">
+      <p class="section-label reveal">The Driver</p>
+      <h2 class="section-title reveal reveal-d1">Speed is a language.<br>I speak it fluently.</h2>
+      <div class="driver-grid">
+        <div class="driver-image reveal">
+          <img src="https://picsum.photos/id/159/1600/2133" alt="Marco Velardi portrait" loading="lazy">
+          <span class="image-caption">Monza, 2025</span>
+        </div>
+        <div class="driver-text reveal reveal-d1">
+          <h3>FROM NAPLES TO THE GRID</h3>
+          <p>Marco Velardi discovered his love for speed at age four, karting on a makeshift track behind his grandfather's garage in Naples. By 14, he was European Karting Champion. By 19, he was in Formula 2.</p>
+          <p>Today, at 28, he is one of the most consistent and exciting drivers on the Formula 1 grid — known for his aggressive late-braking, surgical precision in wet conditions, and an unshakeable composure under pressure.</p>
+          <p>Number 27 isn't just a racing number. It's the age his father won his last motorcycle race. It's heritage, woven into carbon fiber.</p>
+          <a href="#career" class="btn btn-outline">
+            Full Career
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Helmet Showcase -->
+  <section class="helmets">
+    <div class="container">
+      <p class="section-label reveal">Helmets</p>
+      <h2 class="section-title reveal reveal-d1">Every season,<br>a new story.</h2>
+      <div class="helmet-carousel">
+        <div class="helmet-card">
+          <div class="helmet-card-image">
+            <img src="https://picsum.photos/id/137/680/510" alt="2026 Helmet" loading="lazy">
+          </div>
+          <div class="helmet-card-info">
+            <div class="helmet-card-year">2026</div>
+            <div class="helmet-card-title">Inferno Edition</div>
+            <div class="helmet-card-desc">Inspired by volcanic ash and Vesuvius fire</div>
+          </div>
+        </div>
+        <div class="helmet-card">
+          <div class="helmet-card-image">
+            <img src="https://picsum.photos/id/165/680/510" alt="2025 Helmet" loading="lazy">
+          </div>
+          <div class="helmet-card-info">
+            <div class="helmet-card-year">2025</div>
+            <div class="helmet-card-title">Midnight Chrome</div>
+            <div class="helmet-card-desc">Mirror-polished titanium tribute to Monza nights</div>
+          </div>
+        </div>
+        <div class="helmet-card">
+          <div class="helmet-card-image">
+            <img src="https://picsum.photos/id/197/680/510" alt="2024 Helmet" loading="lazy">
+          </div>
+          <div class="helmet-card-info">
+            <div class="helmet-card-year">2024</div>
+            <div class="helmet-card-title">Azzurro Classico</div>
+            <div class="helmet-card-desc">Italian national blue with gold heritage stripes</div>
+          </div>
+        </div>
+        <div class="helmet-card">
+          <div class="helmet-card-image">
+            <img src="https://picsum.photos/id/180/680/510" alt="2023 Helmet" loading="lazy">
+          </div>
+          <div class="helmet-card-info">
+            <div class="helmet-card-year">2023</div>
+            <div class="helmet-card-title">Carbon Ghost</div>
+            <div class="helmet-card-desc">Stealth matte black with UV-reactive patterns</div>
+          </div>
+        </div>
+        <div class="helmet-card">
+          <div class="helmet-card-image">
+            <img src="https://picsum.photos/id/144/680/510" alt="2022 Helmet" loading="lazy">
+          </div>
+          <div class="helmet-card-info">
+            <div class="helmet-card-year">2022</div>
+            <div class="helmet-card-title">Rosso Antico</div>
+            <div class="helmet-card-desc">Hand-painted homage to vintage Italian racing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Career Timeline -->
+  <section class="career" id="career">
+    <div class="container">
+      <div class="career-header">
+        <p class="section-label reveal">Career</p>
+        <h2 class="section-title reveal reveal-d1">The Road to F1</h2>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item reveal">
+          <div class="timeline-content">
+            <div class="timeline-year">2026</div>
+            <div class="timeline-title">Formula 1 — 12th Season</div>
+            <div class="timeline-desc">Leading the championship fight after 8 rounds</div>
+          </div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-spacer"></div>
+        </div>
+        <div class="timeline-item reveal">
+          <div class="timeline-spacer"></div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-year">2024</div>
+            <div class="timeline-title">First Championship Title</div>
+            <div class="timeline-desc">14 wins, 31 podiums in a dominant season</div>
+          </div>
+        </div>
+        <div class="timeline-item reveal">
+          <div class="timeline-content">
+            <div class="timeline-year">2021</div>
+            <div class="timeline-title">First F1 Victory</div>
+            <div class="timeline-desc">Monza — a hometown hero is born</div>
+          </div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-spacer"></div>
+        </div>
+        <div class="timeline-item reveal">
+          <div class="timeline-spacer"></div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-year">2019</div>
+            <div class="timeline-title">F1 Pole Position — Monaco</div>
+            <div class="timeline-desc">Youngest Italian to take pole in Monaco history</div>
+          </div>
+        </div>
+        <div class="timeline-item reveal">
+          <div class="timeline-content">
+            <div class="timeline-year">2017</div>
+            <div class="timeline-title">Formula 2 Champion</div>
+            <div class="timeline-desc">7 wins in a fierce battle with the field</div>
+          </div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-spacer"></div>
+        </div>
+        <div class="timeline-item reveal">
+          <div class="timeline-spacer"></div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-year">2015</div>
+            <div class="timeline-title">Formula 2 Debut</div>
+            <div class="timeline-desc">Signed by Velardi Motorsport Academy</div>
+          </div>
+        </div>
+        <div class="timeline-item reveal">
+          <div class="timeline-content">
+            <div class="timeline-year">2012</div>
+            <div class="timeline-title">European Karting Champion</div>
+            <div class="timeline-desc">Dominated the CIK-FIA championship at age 14</div>
+          </div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-spacer"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="gallery-header">
+        <div>
+          <p class="section-label reveal">Gallery</p>
+          <h2 class="section-title reveal reveal-d1">On Track</h2>
+        </div>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item reveal">
+          <img src="https://picsum.photos/id/183/1200/900" alt="Monaco GP" loading="lazy">
+          <div class="gallery-item-info">
+            <div class="gallery-item-location">Monaco Grand Prix</div>
+            <div class="gallery-item-date">May 2025</div>
+          </div>
+        </div>
+        <div class="gallery-item reveal reveal-d1">
+          <img src="https://picsum.photos/id/146/600/375" alt="Monza" loading="lazy">
+          <div class="gallery-item-info">
+            <div class="gallery-item-location">Monza</div>
+            <div class="gallery-item-date">September 2025</div>
+          </div>
+        </div>
+        <div class="gallery-item reveal reveal-d2">
+          <img src="https://picsum.photos/id/117/600/375" alt="Spa" loading="lazy">
+          <div class="gallery-item-info">
+            <div class="gallery-item-location">Spa-Francorchamps</div>
+            <div class="gallery-item-date">August 2025</div>
+          </div>
+        </div>
+        <div class="gallery-item reveal reveal-d1">
+          <img src="https://picsum.photos/id/110/600/375" alt="Bahrain" loading="lazy">
+          <div class="gallery-item-info">
+            <div class="gallery-item-location">Bahrain</div>
+            <div class="gallery-item-date">March 2026</div>
+          </div>
+        </div>
+        <div class="gallery-item reveal reveal-d2">
+          <img src="https://picsum.photos/id/127/600/375" alt="Silverstone" loading="lazy">
+          <div class="gallery-item-info">
+            <div class="gallery-item-location">Silverstone</div>
+            <div class="gallery-item-date">July 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Life Section -->
+  <section class="life-section" id="life">
+    <div class="container">
+      <p class="section-label reveal">The Man</p>
+      <h2 class="section-title reveal reveal-d1">Life as a Driver</h2>
+      <div class="life-tabs" role="tablist">
+        <button class="life-tab active" data-tab="training" role="tab">Training</button>
+        <button class="life-tab" data-tab="preparation" role="tab">Race Preparation</button>
+        <button class="life-tab" data-tab="raceday" role="tab">Race Day</button>
+        <button class="life-tab" data-tab="offseason" role="tab">Off-Season</button>
+      </div>
+      <div class="life-panels">
+        <div class="life-panel active" data-panel="training">
+          <div class="life-panel-image">
+            <img src="https://picsum.photos/id/175/800/600" alt="Training" loading="lazy">
+          </div>
+          <div class="life-panel-text">
+            <h3>BODY & MIND</h3>
+            <p>Every day begins at 5:30 AM. Two hours of physical training — neck conditioning, core stability, reaction drills. The body of an F1 driver endures up to 6G in corners. You don't survive that without being an athlete first and a driver second.</p>
+            <p>Mental training is equally important. Visualization sessions, simulator work, and breathing exercises form the invisible foundation of every lap time.</p>
+          </div>
+        </div>
+        <div class="life-panel" data-panel="preparation">
+          <div class="life-panel-image">
+            <img src="https://picsum.photos/id/160/800/600" alt="Preparation" loading="lazy">
+          </div>
+          <div class="life-panel-text">
+            <h3>THE WEEK BEFORE</h3>
+            <p>Race preparation starts seven days out. Data analysis from previous years. Track walks on Wednesday. Simulator sessions to fine-tune setup preferences. Endless meetings with engineers about tire strategy, fuel loads, and weather models.</p>
+            <p>By Thursday, the car is being assembled in the garage. By Friday, the real work begins on track.</p>
+          </div>
+        </div>
+        <div class="life-panel" data-panel="raceday">
+          <div class="life-panel-image">
+            <img src="https://picsum.photos/id/142/800/600" alt="Race Day" loading="lazy">
+          </div>
+          <div class="life-panel-text">
+            <h3>LIGHTS OUT</h3>
+            <p>Race day is pure focus. A light breakfast. Team briefing at 9 AM. Final systems check. The grid walk — fans, cameras, controlled chaos. Then silence. Helmet on. Visor down. The world narrows to 305 kilometers of asphalt.</p>
+            <p>In the cockpit, time bends. Two hours feel like twenty minutes. Every decision happens in fractions of a second. There's nothing else like it.</p>
+          </div>
+        </div>
+        <div class="life-panel" data-panel="offseason">
+          <div class="life-panel-image">
+            <img src="https://picsum.photos/id/168/800/600" alt="Off-Season" loading="lazy">
+          </div>
+          <div class="life-panel-text">
+            <h3>RESET & RECHARGE</h3>
+            <p>December through February is sacred time. Naples, family dinners, football with childhood friends. A week hiking in the Dolomites. Time to remember who Marco is beyond the helmet.</p>
+            <p>But it never fully stops. Training camps in January. The new car reveal in February. And then the fire ignites again — Melbourne, round one, a new year of war.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partners -->
+  <section class="partners" id="partners">
+    <div class="container">
+      <p class="section-label reveal">Partners</p>
+      <h2 class="section-title reveal reveal-d1">Trusted By</h2>
+      <div class="partners-logos reveal reveal-d2">
+        <span class="partner-logo">VELOCE</span>
+        <span class="partner-logo">TITANIUM</span>
+        <span class="partner-logo">APEX</span>
+        <span class="partner-logo">NERO</span>
+        <span class="partner-logo">FORZA</span>
+        <span class="partner-logo">CARBON+</span>
+        <span class="partner-logo">VENTO</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a href="#" class="footer-logo">VELARDI<span>27</span></a>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Cookie Preferences</a>
+          <a href="#">Imprint</a>
+          <a href="#">Press</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <div class="footer-copy">&copy; 2026 Marco Velardi. All rights reserved. Photos via Picsum/Unsplash.</div>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      // ─── Loader ───
+      const loader = document.getElementById('loader');
+      window.addEventListener('load', () => {
+        setTimeout(() => loader.classList.add('hidden'), 2000);
+      });
+
+      // ─── Mobile Menu ───
+      const menuToggle = document.getElementById('menuToggle');
+      const mobileNav = document.getElementById('mobileNav');
+
+      menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        mobileNav.classList.toggle('open');
+        document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+      });
+
+      mobileNav.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          menuToggle.classList.remove('active');
+          mobileNav.classList.remove('open');
+          document.body.style.overflow = '';
+        });
+      });
+
+      // ─── Intersection Observer: reveal ───
+      const revealObserver = new IntersectionObserver(
+        entries => entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            revealObserver.unobserve(e.target);
+          }
+        }),
+        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      );
+
+      document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+      // ─── Animated Counters ───
+      const counterObserver = new IntersectionObserver(
+        entries => entries.forEach(e => {
+          if (e.isIntersecting) {
+            const el = e.target;
+            const target = parseInt(el.dataset.count, 10);
+            animateCount(el, target);
+            counterObserver.unobserve(el);
+          }
+        }),
+        { threshold: 0.5 }
+      );
+
+      function animateCount(el, target) {
+        const duration = 2000;
+        const start = performance.now();
+        const tick = now => {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 4);
+          el.textContent = Math.round(target * eased);
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+
+      document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+      // ─── Life Tabs ───
+      const tabs = document.querySelectorAll('.life-tab');
+      const panels = document.querySelectorAll('.life-panel');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+        });
+      });
+
+      // ─── Smooth anchor scroll ───
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const target = document.querySelector(a.getAttribute('href'));
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      // ─── Parallax Hero Image ───
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const heroImg = document.querySelector('.hero-bg img');
+        window.addEventListener('scroll', () => {
+          const y = scrollY;
+          if (y < innerHeight) {
+            heroImg.style.transform = `translateY(${y * 0.3}px) scale(1.1)`;
+          }
+        }, { passive: true });
+      }
+
+    })();
+  </script>
+</body>
+</html>
