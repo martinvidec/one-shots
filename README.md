@@ -14,6 +14,7 @@ Ein Prompt rein, eine fertige Webseite raus. Das Ziel ist es zu zeigen, was mit 
 | 2 | [`apple-narrative/`](./apple-narrative) | https://martinvidec.github.io/one-shots/apple-narrative/ | Baue eine Apple like Website mit narrative scrolling und 3D oder pseudo 3D Effekten. |
 | 3 | [`racing-driver/`](./racing-driver) | https://martinvidec.github.io/one-shots/racing-driver/ | Baue diese Seite nach: https://charlesleclerc.com/en/ . Verwende Bilder von Unsplash, falls du Platzhalter brauchst. |
 | 4 | [`data-science-fractal/`](./data-science-fractal) | https://martinvidec.github.io/one-shots/data-science-fractal/ | Baue eine Websiteportfolio für einen Data-Science Researcher. Verwende ein Fraktal als Hintergrund, das live berechnet wird und in das während des Scrollens immer tiefer eingetaucht wird. Betreibe Research um eine geeignete JS Bibliothek dafür zu finden (z.B. processing.js). Vermeide AI-slop Farbpaletten! |
+| 5 | [`ai-assistant/`](./ai-assistant) | https://martinvidec.github.io/one-shots/ai-assistant/ | Erstelle eine AI-Assistant Site und verwende dabei den Halo Effekt von https://github.com/tengbao/vanta |
 
 ## Struktur
 
