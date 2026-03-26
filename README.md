@@ -11,6 +11,7 @@ Ein Prompt rein, eine fertige Webseite raus. Das Ziel ist es zu zeigen, was mit 
 | # | Ordner | Live | Prompt |
 |---|--------|------|--------|
 | 1 | [`portfolio/`](./portfolio) | https://martinvidec.github.io/one-shots/portfolio/ | Erstelle bitte eine Portfoliowebseite für einen Webdesigner. Verwende state-of-the-art clientside JS, CSS und HTML. |
+| 2 | [`apple-narrative/`](./apple-narrative) | https://martinvidec.github.io/one-shots/apple-narrative/ | Baue eine Apple like Website mit narrative scrolling und 3D oder pseudo 3D Effekten. |
 
 ## Struktur
 
