@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dario Vela — Official Website | #27</title>
+<meta name="description" content="Official website of Dario Vela, Formula racing driver for Aquila Corse. The driver, the journey, the craft.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============ Tokens ============ */
+  :root {
+    --bg: #0b0b0d;
+    --bg-raised: #121215;
+    --ink: #f4f2ee;
+    --ink-dim: #a3a09b;
+    --line: #26262b;
+    --red: #e0142d;
+    --red-deep: #8f0c1d;
+    --font-display: "Archivo", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --space: clamp(4rem, 10vw, 9rem);
+    --gutter: clamp(1.25rem, 5vw, 4rem);
+    --radius: 4px;
+  }
+
+  /* ============ Reset / base ============ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001s !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001s !important;
+    }
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+  ::selection { background: var(--red); color: #fff; }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem; top: -4rem;
+    z-index: 200;
+    background: var(--red);
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 700;
+    transition: top 0.2s ease;
+  }
+  .skip-link:focus { top: 1rem; }
+
+  .wrap { max-width: 78rem; margin-inline: auto; padding-inline: var(--gutter); }
+
+  /* ============ Header ============ */
+  .site-header {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 100;
+    transition: background 0.35s ease, border-color 0.35s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .site-header.is-scrolled {
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom-color: var(--line);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.1rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    font-size: 1.25rem;
+  }
+  .brand .num { color: var(--red); }
+  .main-nav ul {
+    display: flex;
+    gap: clamp(1rem, 2.5vw, 2.25rem);
+    list-style: none;
+  }
+  .main-nav a {
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    transition: color 0.2s ease;
+  }
+  .main-nav a:hover, .main-nav a:focus-visible { color: var(--ink); }
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.55rem 0.9rem;
+    cursor: pointer;
+  }
+  @media (max-width: 47.9rem) {
+    .nav-toggle { display: inline-block; }
+    .main-nav {
+      position: absolute;
+      inset-inline: 0;
+      top: 100%;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      display: none;
+      padding: 1rem var(--gutter) 1.5rem;
+    }
+    .main-nav.is-open { display: block; }
+    .main-nav ul { flex-direction: column; gap: 1rem; }
+    .main-nav a { font-size: 1rem; }
+  }
+
+  /* ============ Hero ============ */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    align-items: end;
+    isolation: isolate;
+    overflow: clip;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+  .hero-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: grayscale(35%) contrast(1.08) brightness(0.72);
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgb(11 11 13 / 0.55) 0%, rgb(11 11 13 / 0.15) 35%, rgb(11 11 13 / 0.92) 88%),
+      radial-gradient(120% 60% at 80% 10%, rgb(224 20 45 / 0.18), transparent 60%);
+  }
+  .hero-number {
+    position: absolute;
+    right: -0.04em;
+    top: 50%;
+    translate: 0 -58%;
+    z-index: -1;
+    font-weight: 900;
+    font-size: clamp(14rem, 42vw, 34rem);
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+    color: transparent;
+    -webkit-text-stroke: 2px rgb(244 242 238 / 0.16);
+    user-select: none;
+    pointer-events: none;
+  }
+  .hero-content {
+    padding-block: clamp(6rem, 14vh, 9rem) clamp(3rem, 8vh, 5rem);
+  }
+  .hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: clamp(0.72rem, 1.4vw, 0.85rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 1.25rem;
+  }
+  .hero-kicker::before {
+    content: "";
+    width: 2.5rem;
+    height: 2px;
+    background: var(--red);
+  }
+  .hero h1 {
+    font-size: clamp(3.2rem, 11vw, 8.5rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .hero h1 .accent { color: var(--red); }
+  .hero-sub {
+    max-width: 34rem;
+    margin-top: 1.5rem;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--ink-dim);
+    text-wrap: pretty;
+  }
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 2.25rem;
+    padding: 0.95rem 1.8rem;
+    background: var(--red);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    transition: background 0.25s ease, translate 0.25s ease;
+  }
+  .hero-cta:hover, .hero-cta:focus-visible { background: var(--red-deep); translate: 0 -2px; }
+  .hero-cta svg { transition: translate 0.25s ease; }
+  .hero-cta:hover svg { translate: 0 3px; }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 1.4rem;
+    left: 50%;
+    translate: -50%;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    writing-mode: vertical-rl;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-hint { animation: bob 2.4s ease-in-out infinite; }
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  /* Hero parallax via scroll-driven animation where supported */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-media img {
+        animation: hero-drift linear both;
+        animation-timeline: view(block);
+        animation-range: exit 0% exit 100%;
+      }
+      @keyframes hero-drift {
+        to { transform: translateY(12%) scale(1.06); }
+      }
+    }
+  }
+
+  /* ============ Ticker ============ */
+  .ticker {
+    border-block: 1px solid var(--line);
+    background: var(--bg-raised);
+    overflow: clip;
+    padding-block: 0.85rem;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 3rem;
+    width: max-content;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    white-space: nowrap;
+  }
+  .ticker-track span .dot { color: var(--red); margin-inline: 1.5rem 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ticker-track { animation: ticker 28s linear infinite; }
+  }
+  @keyframes ticker { to { transform: translateX(-50%); } }
+
+  /* ============ Sections ============ */
+  section { padding-block: var(--space); }
+  .section-head { margin-bottom: clamp(2.5rem, 6vw, 4.5rem); }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1rem;
+  }
+  .eyebrow::before { content: ""; width: 1.8rem; height: 2px; background: var(--red); }
+  .section-head h2 {
+    font-size: clamp(2rem, 5.5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-wrap: balance;
+    max-width: 22ch;
+  }
+  .lede {
+    margin-top: 1.25rem;
+    max-width: 46rem;
+    font-size: clamp(1.02rem, 1.8vw, 1.2rem);
+    color: var(--ink-dim);
+    text-wrap: pretty;
+  }
+
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0;
+    translate: 0 34px;
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), translate 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0s);
+  }
+  .reveal.is-in { opacity: 1; translate: 0 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; translate: none; transition: none; }
+  }
+
+  /* ============ Driver section ============ */
+  .driver-grid {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+  @media (min-width: 56rem) {
+    .driver-grid { grid-template-columns: 1.05fr 0.95fr; }
+  }
+  .portrait-frame {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: clip;
+    aspect-ratio: 4 / 5;
+  }
+  .portrait-frame img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(25%) contrast(1.05);
+  }
+  .portrait-frame::after {
+    content: "EST. 1999 — GENOA, IT";
+    position: absolute;
+    left: 1rem; bottom: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: rgb(244 242 238 / 0.85);
+    background: rgb(11 11 13 / 0.55);
+    backdrop-filter: blur(6px);
+    padding: 0.45rem 0.8rem;
+    border-radius: var(--radius);
+  }
+  .driver-copy p + p { margin-top: 1.1rem; }
+  .driver-copy p { color: var(--ink-dim); max-width: 56ch; text-wrap: pretty; }
+  .driver-copy strong { color: var(--ink); font-weight: 600; }
+
+  /* ============ Facts / stats ============ */
+  .facts {
+    background: var(--bg-raised);
+    border-block: 1px solid var(--line);
+  }
+  .facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+    border-inline-start: 1px solid var(--line);
+  }
+  .fact {
+    border: 1px solid var(--line);
+    border-inline-start: none;
+    padding: clamp(1.4rem, 3vw, 2.2rem) clamp(1.2rem, 2.5vw, 2rem);
+  }
+  .fact-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .fact-value {
+    margin-top: 0.6rem;
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .fact-value.is-red { color: var(--red); }
+  .fact-value small {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink-dim);
+    letter-spacing: 0;
+  }
+
+  /* ============ Beginnings ============ */
+  .split {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+  @media (min-width: 56rem) {
+    .split { grid-template-columns: 1fr 1fr; }
+    .split.flip > .split-media { order: 2; }
+  }
+  .split-media {
+    border-radius: var(--radius);
+    overflow: clip;
+    aspect-ratio: 3 / 2;
+  }
+  .split-media img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%) contrast(1.05) brightness(0.95);
+    transition: scale 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .split-media:hover img { scale: 1.04; }
+  .split-copy p { color: var(--ink-dim); max-width: 56ch; text-wrap: pretty; }
+  .split-copy p + p { margin-top: 1.1rem; }
+  .split-copy strong { color: var(--ink); font-weight: 600; }
+
+  blockquote.pull {
+    margin-top: 1.6rem;
+    padding-left: 1.4rem;
+    border-left: 3px solid var(--red);
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  blockquote.pull cite {
+    display: block;
+    margin-top: 0.7rem;
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  /* ============ Timeline ============ */
+  .timeline {
+    list-style: none;
+    position: relative;
+    max-width: 50rem;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 0.45rem;
+    top: 0.4rem;
+    bottom: 0.4rem;
+    width: 2px;
+    background: var(--line);
+  }
+  .timeline li {
+    position: relative;
+    padding-left: 2.6rem;
+    padding-bottom: clamp(1.8rem, 4vw, 2.8rem);
+  }
+  .timeline li:last-child { padding-bottom: 0; }
+  .timeline li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.42rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--red);
+  }
+  .timeline .year {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    color: var(--red);
+  }
+  .timeline h3 {
+    margin-top: 0.3rem;
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .timeline p {
+    margin-top: 0.45rem;
+    color: var(--ink-dim);
+    max-width: 52ch;
+    text-wrap: pretty;
+  }
+
+  /* ============ Big quote ============ */
+  .statement {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(6rem, 14vw, 11rem);
+    text-align: center;
+  }
+  .statement-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+  .statement-bg img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(50%) brightness(0.4) contrast(1.1);
+  }
+  .statement::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(80% 80% at 50% 50%, rgb(224 20 45 / 0.16), transparent 70%);
+  }
+  .statement blockquote {
+    max-width: 60rem;
+    margin-inline: auto;
+    font-size: clamp(1.6rem, 4.5vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .statement blockquote .accent { color: var(--red); }
+  .statement cite {
+    display: block;
+    margin-top: 1.6rem;
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 0.75rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .statement-bg img {
+        animation: statement-zoom linear both;
+        animation-timeline: view(block);
+        animation-range: cover 0% cover 100%;
+      }
+      @keyframes statement-zoom {
+        from { transform: scale(1.12); }
+        to { transform: scale(1); }
+      }
+    }
+  }
+
+  /* ============ Gallery ============ */
+  .gallery-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .gallery-controls { display: flex; gap: 0.6rem; }
+  .gallery-controls button {
+    width: 3rem; height: 3rem;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .gallery-controls button:hover, .gallery-controls button:focus-visible {
+    border-color: var(--red);
+    background: rgb(224 20 45 / 0.12);
+  }
+  .gallery-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(26rem, 82%);
+    gap: 1.2rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-block: 0.5rem;
+    padding-inline: var(--gutter);
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+  }
+  .gallery-track > figure {
+    scroll-snap-align: start;
+    border-radius: var(--radius);
+    overflow: clip;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+  }
+  .gallery-track img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    filter: grayscale(15%) contrast(1.05);
+  }
+  .gallery-track figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .gallery-track figcaption .loc { color: var(--ink); }
+
+  /* ============ Craft tabs ============ */
+  .craft { background: var(--bg-raised); border-block: 1px solid var(--line); }
+  .tabs [role="tablist"] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .tabs [role="tab"] {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--ink-dim);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.9rem 1.1rem;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .tabs [role="tab"]:hover { color: var(--ink); }
+  .tabs [role="tab"][aria-selected="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--red);
+  }
+  .tabs [role="tabpanel"] { outline: none; }
+  .tabs [role="tabpanel"][hidden] { display: none; }
+  .panel-grid {
+    display: grid;
+    gap: clamp(1.8rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+  @media (min-width: 56rem) {
+    .panel-grid { grid-template-columns: 1.1fr 0.9fr; }
+  }
+  .panel-grid p { color: var(--ink-dim); max-width: 56ch; text-wrap: pretty; }
+  .panel-grid p + p { margin-top: 1rem; }
+  .panel-grid strong { color: var(--ink); font-weight: 600; }
+  .panel-media {
+    border-radius: var(--radius);
+    overflow: clip;
+    aspect-ratio: 4 / 3;
+  }
+  .panel-media img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(25%) contrast(1.05) brightness(0.92);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tabs [role="tabpanel"]:not([hidden]) .panel-grid { animation: panel-in 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  }
+  @keyframes panel-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ============ Footer ============ */
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding-block: clamp(3rem, 7vw, 5rem) 2rem;
+  }
+  .footer-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 56rem) {
+    .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; }
+  }
+  .footer-brand .big {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .footer-brand .big .num { color: var(--red); }
+  .footer-brand p {
+    margin-top: 1rem;
+    color: var(--ink-dim);
+    max-width: 30rem;
+    font-size: 0.92rem;
+    text-wrap: pretty;
+  }
+  .footer-col h3 {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 1rem;
+  }
+  .footer-col ul { list-style: none; display: grid; gap: 0.55rem; }
+  .footer-col a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+  }
+  .footer-col a:hover, .footer-col a:focus-visible { color: var(--red); }
+  .footer-meta {
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.8rem 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: var(--ink-dim);
+  }
+
+  /* Focus visibility */
+  :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="top">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top" aria-label="Dario Vela, home">DV<span class="num">27</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav">Menu</button>
+    <nav class="main-nav" id="main-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="#driver">The Driver</a></li>
+        <li><a href="#beginnings">Beginnings</a></li>
+        <li><a href="#career">Career</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#craft">The Craft</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero" aria-label="Introduction">
+    <div class="hero-media">
+      <img src="https://images.unsplash.com/photo-1504707748692-419802cf939d?auto=format&fit=crop&w=2000&q=80"
+           alt="Race car at speed on a circuit, motion-blurred background" fetchpriority="high">
+    </div>
+    <p class="hero-number" aria-hidden="true">27</p>
+    <div class="wrap hero-content">
+      <p class="hero-kicker">Official website — Aquila Corse driver</p>
+      <h1>Dario<br><span class="accent">Vela</span></h1>
+      <p class="hero-sub">Born to chase tenths. From the karting tracks of Liguria to the front row of the world's fastest grid — this is the story of car number twenty-seven.</p>
+      <a class="hero-cta" href="#driver">
+        Meet the driver
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+    <p class="scroll-hint" aria-hidden="true">Scroll</p>
+  </section>
+
+  <!-- ============ Ticker ============ -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Aquila Corse <span class="dot">●</span></span>
+      <span>Car No. 27 <span class="dot">●</span></span>
+      <span>6 Grand Prix wins <span class="dot">●</span></span>
+      <span>F2 Champion 2019 <span class="dot">●</span></span>
+      <span>Genoa, Italia <span class="dot">●</span></span>
+      <span>Aquila Corse <span class="dot">●</span></span>
+      <span>Car No. 27 <span class="dot">●</span></span>
+      <span>6 Grand Prix wins <span class="dot">●</span></span>
+      <span>F2 Champion 2019 <span class="dot">●</span></span>
+      <span>Genoa, Italia <span class="dot">●</span></span>
+    </div>
+  </div>
+
+  <!-- ============ The Driver ============ -->
+  <section id="driver" aria-labelledby="driver-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">The Driver</p>
+        <h2 id="driver-title">Calm hands.<br>Restless ambition.</h2>
+      </div>
+      <div class="driver-grid">
+        <div class="portrait-frame reveal">
+          <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80"
+               alt="Portrait of a driver in racing gear holding a helmet" loading="lazy">
+        </div>
+        <div class="driver-copy reveal" style="--d: 0.12s">
+          <p><strong>Dario Vela</strong> is widely regarded as one of the most complete drivers of his generation — a racer who pairs surgical qualifying pace with an almost unsettling composure when the pressure peaks.</p>
+          <p>He first sat in a kart at the age of four, on a damp circuit above the port of Genoa, and refused to climb out until the marshals turned the lights off. Twelve years later he was a single-seater champion. At twenty-one, he started his first Grand Prix. Since 2022 he has raced for <strong>Aquila Corse</strong>, the team whose eagle crest he doodled in the margins of his school notebooks.</p>
+          <blockquote class="pull">
+            “Speed was never the goal. The goal was control — speed is just what control looks like from the outside.”
+            <cite>— Dario Vela</cite>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Facts ============ -->
+  <section class="facts" aria-label="General information and career statistics">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">General Information</p>
+        <h2>The numbers so far</h2>
+      </div>
+      <div class="facts-grid">
+        <div class="fact reveal">
+          <p class="fact-label">Born</p>
+          <p class="fact-value">03.04<small>1999 — Genoa, Italy</small></p>
+        </div>
+        <div class="fact reveal" style="--d: 0.06s">
+          <p class="fact-label">Race number</p>
+          <p class="fact-value is-red">27<small>Since his first kart</small></p>
+        </div>
+        <div class="fact reveal" style="--d: 0.12s">
+          <p class="fact-label">Grand Prix starts</p>
+          <p class="fact-value"><span class="counter" data-target="118">0</span><small>2020 — today</small></p>
+        </div>
+        <div class="fact reveal" style="--d: 0.18s">
+          <p class="fact-label">Podiums</p>
+          <p class="fact-value"><span class="counter" data-target="24">0</span><small>Across 5 seasons</small></p>
+        </div>
+        <div class="fact reveal" style="--d: 0.24s">
+          <p class="fact-label">Victories</p>
+          <p class="fact-value is-red"><span class="counter" data-target="6">0</span><small>First: Monza-style magic</small></p>
+        </div>
+        <div class="fact reveal" style="--d: 0.3s">
+          <p class="fact-label">Pole positions</p>
+          <p class="fact-value"><span class="counter" data-target="14">0</span><small>One-lap specialist</small></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Beginnings ============ -->
+  <section id="beginnings" aria-labelledby="beginnings-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Beginnings</p>
+        <h2 id="beginnings-title">A kid, a kart, and a hill above the sea</h2>
+      </div>
+      <div class="split">
+        <div class="split-media reveal">
+          <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80"
+               alt="Low-slung race machine carving through a corner" loading="lazy">
+        </div>
+        <div class="split-copy reveal" style="--d: 0.12s">
+          <p>Dario's father ran a small marine-engine workshop in Genoa. The first kart was a customer's trade-in, rebuilt at the kitchen table over a single winter. On the narrow club circuit at Colle Vento, six-year-old Dario lapped until his hands blistered — then asked for thicker gloves, not a break.</p>
+          <p>By twelve he had won <strong>three Italian regional karting titles</strong>. By fourteen, the <strong>European Junior Championship</strong> — driving the final in the rain with a cracked rib he mentioned to no one until the podium. It was after that race that he told his father the sentence the family still quotes:</p>
+          <blockquote class="pull">
+            “Papà, I don't want to do this when I grow up. I want to do it now.”
+            <cite>— Dario, age 14</cite>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Career timeline ============ -->
+  <section id="career" aria-labelledby="career-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Motorsport</p>
+        <h2 id="career-title">The climb,<br>season by season</h2>
+        <p class="lede">No shortcuts, no skipped rungs. Every category answered the same question a little louder: how fast can calm be?</p>
+      </div>
+      <ol class="timeline">
+        <li class="reveal">
+          <p class="year">2005 — 2014</p>
+          <h3>Karting</h3>
+          <p>From Colle Vento club races to the European Junior crown. Nine years, three national titles, and a reputation for impossible last-lap overtakes.</p>
+        </li>
+        <li class="reveal">
+          <p class="year">2015 — 2016</p>
+          <h3>Italian Formula 4 — Champion</h3>
+          <p>First season in single-seaters: rookie of the year. Second season: champion, with seven wins and a points margin that ended the title fight two rounds early.</p>
+        </li>
+        <li class="reveal">
+          <p class="year">2017 — 2018</p>
+          <h3>Formula 3 — Vice-Champion</h3>
+          <p>A car-breaking crash at Spa in his first year became the turning point. He returned eleven days later and finished on the podium. The next season, he lost the title by four points — and learned more from that than from any trophy.</p>
+        </li>
+        <li class="reveal">
+          <p class="year">2019</p>
+          <h3>Formula 2 — Champion as a rookie</h3>
+          <p>Five feature-race wins and a championship sealed in the wet. The paddock stopped asking if he would reach the top category, and started asking when.</p>
+        </li>
+        <li class="reveal">
+          <p class="year">2020 — 2021</p>
+          <h3>Grand Prix debut — Meridian Racing</h3>
+          <p>Two seasons in midfield machinery, dragging a stubborn car into places it had no business being. A first podium in the rain at the Marina circuit made the front pages.</p>
+        </li>
+        <li class="reveal">
+          <p class="year">2022 — Today</p>
+          <h3>Aquila Corse — Car No. 27</h3>
+          <p>The call he had dreamed about since childhood. Six victories, fourteen poles, and a single line on the whiteboard in his trainer's gym: <em>the title is a habit, not an event.</em></p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ Statement ============ -->
+  <section class="statement" aria-label="Quote">
+    <div class="statement-bg">
+      <img src="https://images.unsplash.com/photo-1517994112540-009c47ea476b?auto=format&fit=crop&w=2000&q=70"
+           alt="" loading="lazy">
+    </div>
+    <div class="wrap reveal">
+      <blockquote>
+        “I have one dream, and it does not get smaller:<br>
+        to become <span class="accent">World Champion</span> with Aquila.”
+        <cite>Dario Vela — Car No. 27</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ============ Gallery ============ -->
+  <section id="gallery" aria-labelledby="gallery-title">
+    <div class="wrap gallery-head section-head reveal">
+      <div>
+        <p class="eyebrow">Gallery</p>
+        <h2 id="gallery-title">Moments at speed</h2>
+      </div>
+      <div class="gallery-controls">
+        <button type="button" data-dir="-1" aria-label="Previous images">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10.5 3 5.5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button type="button" data-dir="1" aria-label="Next images">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="m5.5 3 5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="gallery-track" tabindex="0" role="group" aria-label="Photo carousel, scroll horizontally">
+      <figure>
+        <img src="https://images.unsplash.com/photo-1541447271487-09612b3f49f7?auto=format&fit=crop&w=1200&q=75"
+             alt="Single-seater race car on track" loading="lazy">
+        <figcaption><span class="loc">Monza Heat</span><span>2024</span></figcaption>
+      </figure>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=1200&q=75"
+             alt="Front view of a low sports prototype" loading="lazy">
+        <figcaption><span class="loc">Pre-season shakedown</span><span>2023</span></figcaption>
+      </figure>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1200&q=75"
+             alt="Race car under floodlights" loading="lazy">
+        <figcaption><span class="loc">Night race, Marina</span><span>2023</span></figcaption>
+      </figure>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=75"
+             alt="Sports car at golden hour" loading="lazy">
+        <figcaption><span class="loc">Desert GP</span><span>2024</span></figcaption>
+      </figure>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1200&q=75"
+             alt="Car drifting through a corner with tire smoke" loading="lazy">
+        <figcaption><span class="loc">First victory lap</span><span>2022</span></figcaption>
+      </figure>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=1200&q=75"
+             alt="Red racing machine, front three-quarter view" loading="lazy">
+        <figcaption><span class="loc">Home Grand Prix</span><span>2025</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ The Craft (tabs) ============ -->
+  <section id="craft" class="craft" aria-labelledby="craft-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Life as a Driver</p>
+        <h2 id="craft-title">The craft behind the lap time</h2>
+        <p class="lede">A Grand Prix lasts two hours. Earning the right to be ordinary in those two hours takes the other 8,758.</p>
+      </div>
+
+      <div class="tabs reveal">
+        <div role="tablist" aria-label="Aspects of a driver's life">
+          <button role="tab" id="tab-training" aria-controls="panel-training" aria-selected="true">Training</button>
+          <button role="tab" id="tab-prep" aria-controls="panel-prep" aria-selected="false" tabindex="-1">Preparation</button>
+          <button role="tab" id="tab-race" aria-controls="panel-race" aria-selected="false" tabindex="-1">Race Day</button>
+          <button role="tab" id="tab-off" aria-controls="panel-off" aria-selected="false" tabindex="-1">Off-Season</button>
+        </div>
+
+        <div role="tabpanel" id="panel-training" aria-labelledby="tab-training" tabindex="0">
+          <div class="panel-grid">
+            <div>
+              <p>Inside the cockpit, Dario's heart rate sits near <strong>185 BPM for two hours</strong> while his neck resists forces of up to five times his body weight. His program — built with a two-person performance team — splits the week between cardiovascular base work, heavy neck and core sessions, and reaction drills on a light board he claims to hate “with great affection”.</p>
+              <p>Just as much time goes into the invisible part: breath work, heat adaptation, and cognitive training designed to keep decision-making clean when the body is screaming. Recovery is treated as a discipline of its own — sleep tracked, load managed, nothing left to mood.</p>
+            </div>
+            <div class="panel-media">
+              <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=75"
+                   alt="Athlete training with weights in a gym" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" id="panel-prep" aria-labelledby="tab-prep" tabindex="0" hidden>
+          <div class="panel-grid">
+            <div>
+              <p>With real testing limited to a handful of days per year, the simulator carries the load. Before each Grand Prix, Dario drives <strong>two full virtual race distances</strong>, rehearsing kerb strikes, brake-marker shifts and every switch on a steering wheel that has more controls than a small aircraft.</p>
+              <p>Then come the engineers: tire models, fuel targets, three to five strategy branches. By Thursday evening he can recite the track's corner numbers backwards. By Friday morning, he stops thinking about them entirely — “if I still have to think, we prepared badly.”</p>
+            </div>
+            <div class="panel-media">
+              <img src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=1200&q=75"
+                   alt="Driver focused at a racing simulator setup" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" id="panel-race" aria-labelledby="tab-race" tabindex="0" hidden>
+          <div class="panel-grid">
+            <div>
+              <p>Ninety minutes before lights out, the routine begins and never varies: massage, cold immersion, jump rope, the same playlist he has used since Formula 4. Suit on at minus sixty minutes. Helmet on, world off.</p>
+              <p>The start, he says, is the only moment adrenaline is allowed to drive. After turn one it's a long act of accounting — <strong>tires, gaps, fuel, patience</strong> — until the pit wall opens the door and the last twenty laps become a knife fight conducted at 300 km/h. Win or not, the debrief happens the same evening. “The result is loud. The reasons are quiet. I'm interested in the reasons.”</p>
+            </div>
+            <div class="panel-media">
+              <img src="https://images.unsplash.com/photo-1504707748692-419802cf939d?auto=format&fit=crop&w=1200&q=75"
+                   alt="Race car blasting down a straight" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" id="panel-off" aria-labelledby="tab-off" tabindex="0" hidden>
+          <div class="panel-grid">
+            <div>
+              <p>December belongs to the mountains. A training camp in the Dolomites — ski touring, climbing, long cold runs — strips the season off like old paint. Phones are surrendered at the cabin door; the only telemetry is a heart-rate strap.</p>
+              <p>And then there is Genoa: his mother's kitchen, his father's workshop, the same five friends from the karting paddock who never once asked him for paddock passes. <strong>“They knew me when I was slow,”</strong> he says. “That's the most honest data I have.”</p>
+            </div>
+            <div class="panel-media">
+              <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=75"
+                   alt="Snow-covered mountain range under clear sky" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ Footer ============ -->
+<footer class="site-footer" id="contact">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand reveal">
+        <p class="big">Dario Vela <span class="num">#27</span></p>
+        <p>Official website of Dario Vela, racing driver for Aquila Corse. For media, partnership and fan-club enquiries, contact the management office.</p>
+      </div>
+      <div class="footer-col reveal" style="--d: 0.08s">
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="#driver">The Driver</a></li>
+          <li><a href="#beginnings">Beginnings</a></li>
+          <li><a href="#career">Career</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#craft">The Craft</a></li>
+        </ul>
+      </div>
+      <div class="footer-col reveal" style="--d: 0.16s">
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:media@dariovela.example">media@dariovela.example</a></li>
+          <li><a href="mailto:partners@dariovela.example">partners@dariovela.example</a></li>
+          <li><a href="#top">Back to top ↑</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <p>© <span id="year">2026</span> Dario Vela — All rights reserved.</p>
+      <p>Fictional driver. Any resemblance to real persons or teams is coincidental. Photos: Unsplash.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---- Header scroll state ---- */
+  const header = document.querySelector(".site-header");
+  const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 24);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ---- Mobile nav ---- */
+  const toggle = document.querySelector(".nav-toggle");
+  const nav = document.getElementById("main-nav");
+  toggle.addEventListener("click", () => {
+    const open = nav.classList.toggle("is-open");
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.textContent = open ? "Close" : "Menu";
+  });
+  nav.addEventListener("click", (e) => {
+    if (e.target.matches("a")) {
+      nav.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.textContent = "Menu";
+    }
+  });
+
+  /* ---- Reveal on scroll ---- */
+  const revealEls = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window && !prefersReduced) {
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-in");
+          io.unobserve(entry.target);
+        }
+      }
+    }, { threshold: 0.15, rootMargin: "0px 0px -5% 0px" });
+    revealEls.forEach((el) => io.observe(el));
+  } else {
+    revealEls.forEach((el) => el.classList.add("is-in"));
+  }
+
+  /* ---- Animated counters ---- */
+  const counters = document.querySelectorAll(".counter");
+  const runCounter = (el) => {
+    const target = parseInt(el.dataset.target, 10);
+    if (prefersReduced || !("requestAnimationFrame" in window)) {
+      el.textContent = target;
+      return;
+    }
+    const duration = 1400;
+    const start = performance.now();
+    const ease = (t) => 1 - Math.pow(1 - t, 3);
+    const tick = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      el.textContent = Math.round(ease(p) * target);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  if ("IntersectionObserver" in window) {
+    const cio = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          runCounter(entry.target);
+          cio.unobserve(entry.target);
+        }
+      }
+    }, { threshold: 0.6 });
+    counters.forEach((el) => cio.observe(el));
+  } else {
+    counters.forEach((el) => { el.textContent = el.dataset.target; });
+  }
+
+  /* ---- Gallery controls ---- */
+  const track = document.querySelector(".gallery-track");
+  document.querySelectorAll(".gallery-controls button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const card = track.querySelector("figure");
+      const step = card ? card.getBoundingClientRect().width + 20 : 400;
+      track.scrollBy({
+        left: step * Number(btn.dataset.dir),
+        behavior: prefersReduced ? "auto" : "smooth"
+      });
+    });
+  });
+
+  /* ---- Tabs (ARIA pattern with arrow-key support) ---- */
+  const tablist = document.querySelector('[role="tablist"]');
+  const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+  const panels = tabs.map((t) => document.getElementById(t.getAttribute("aria-controls")));
+
+  const selectTab = (tab, focus = true) => {
+    tabs.forEach((t, i) => {
+      const selected = t === tab;
+      t.setAttribute("aria-selected", String(selected));
+      t.tabIndex = selected ? 0 : -1;
+      panels[i].hidden = !selected;
+    });
+    if (focus) tab.focus();
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => selectTab(tab, false));
+  });
+  tablist.addEventListener("keydown", (e) => {
+    const i = tabs.indexOf(document.activeElement);
+    if (i === -1) return;
+    let next = null;
+    if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
+    else if (e.key === "ArrowLeft") next = tabs[(i - 1 + tabs.length) % tabs.length];
+    else if (e.key === "Home") next = tabs[0];
+    else if (e.key === "End") next = tabs[tabs.length - 1];
+    if (next) {
+      e.preventDefault();
+      selectTab(next);
+    }
+  });
+
+  /* ---- Footer year ---- */
+  document.getElementById("year").textContent = new Date().getFullYear();
+})();
+</script>
+
+</body>
+</html>
