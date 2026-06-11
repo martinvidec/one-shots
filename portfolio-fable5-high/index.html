@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="de" id="top">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jonas Reiter — Webdesigner, Wien</title>
+<meta name="description" content="Jonas Reiter ist unabhängiger Webdesigner in Wien. Design-Systeme, Editorial-Websites und Interfaces, die sich anfühlen wie gute Werkzeuge.">
+<meta name="theme-color" content="#1b1830">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Fragment+Mono&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap">
+<script>
+/* Token-Boot: gespeicherte Regler-Werte vor dem ersten Paint anwenden (kein FOUC). */
+(() => {
+  try {
+    const t = JSON.parse(localStorage.getItem("jr-tokens") || "{}");
+    const root = document.documentElement;
+    if (Number.isFinite(t.hue)) root.style.setProperty("--hue", t.hue);
+    if (Number.isFinite(t.radius)) root.style.setProperty("--radius", t.radius);
+    if (t.mode === "light" || t.mode === "dark") root.dataset.mode = t.mode;
+  } catch (_) { /* localStorage gesperrt — egal */ }
+})();
+</script>
+<style>
+/* ====================================================================
+   Tokens — die ganze Seite hängt an --hue und --radius.
+   ==================================================================== */
+@property --hue {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 264;
+}
+@property --radius {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 14;
+}
+
+:root {
+  --hue: 264;
+  --radius: 14;
+  --r: calc(var(--radius) * 1px);
+  --r-sm: calc(var(--radius) * 0.5px);
+
+  color-scheme: light dark;
+
+  /* Papier & Tinte sind leicht an den Akzent-Farbton gekoppelt:
+     wer am Regler dreht, tönt die ganze Seite um. */
+  --paper:    light-dark(oklch(96.5% 0.012 var(--hue)), oklch(17% 0.028 var(--hue)));
+  --paper-2:  light-dark(oklch(93.5% 0.018 var(--hue)), oklch(21% 0.032 var(--hue)));
+  --ink:      light-dark(oklch(25% 0.05 var(--hue)),   oklch(94% 0.014 var(--hue)));
+  --ink-2:    light-dark(oklch(42% 0.035 var(--hue)),  oklch(76% 0.02 var(--hue)));
+  --accent:   light-dark(oklch(54% 0.215 var(--hue)),  oklch(72% 0.165 var(--hue)));
+  --accent-ink: light-dark(oklch(98% 0.01 var(--hue)), oklch(16% 0.05 var(--hue)));
+  --line: color-mix(in oklab, var(--ink) 16%, transparent);
+  --line-soft: color-mix(in oklab, var(--ink) 8%, transparent);
+
+  --font-display: "Bricolage Grotesque", "Helvetica Neue", sans-serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "Fragment Mono", ui-monospace, monospace;
+
+  --fs-hero: clamp(2.7rem, 1.1rem + 6.6vw, 6.2rem);
+  --fs-h2: clamp(1.9rem, 1.2rem + 2.6vw, 3.3rem);
+  --fs-h3: clamp(1.25rem, 1.05rem + 0.7vw, 1.6rem);
+
+  --wrap: min(1120px, 100% - 3rem);
+  --head-h: 4.25rem;
+}
+:root[data-mode="light"] { color-scheme: light; }
+:root[data-mode="dark"]  { color-scheme: dark; }
+
+/* ====================================================================
+   Basis
+   ==================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  background: var(--paper);
+  color: var(--ink);
+  transition: background-color .4s ease, color .4s ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  margin: 0;
+}
+p { text-wrap: pretty; margin: 0; }
+a { color: inherit; }
+code { font-family: var(--font-mono); font-size: .85em; }
+
+.wrap { width: var(--wrap); margin-inline: auto; }
+
+section { scroll-margin-top: calc(var(--head-h) + 1rem); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin: 0 0 1.25rem;
+}
+.eyebrow::before {
+  content: "";
+  width: 2rem;
+  height: 2px;
+  background: var(--accent);
+  flex: none;
+}
+
+/* ====================================================================
+   Lese-Fortschritt (Scroll-Driven Animation, ohne JS)
+   ==================================================================== */
+.progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  scale: 0 1;
+  z-index: 60;
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .progress {
+      animation: grow linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+@keyframes grow { from { scale: 0 1; } to { scale: 1 1; } }
+
+/* ====================================================================
+   Header
+   ==================================================================== */
+.site-head {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--head-h);
+  display: flex;
+  align-items: center;
+  background: color-mix(in oklab, var(--paper) 78%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.site-head .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.brand {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: .15rem;
+}
+.brand i {
+  width: .5em; height: .5em;
+  background: var(--accent);
+  transform: translateY(-.05em);
+  transition: border-radius .3s ease;
+  border-radius: calc(var(--radius) * 2%); /* der Markenpunkt hört auf den Rundungs-Token */
+}
+.site-nav { display: flex; gap: 1.5rem; }
+.site-nav a {
+  text-decoration: none;
+  font-size: .95rem;
+  color: var(--ink-2);
+  padding-block: .25rem;
+  border-bottom: 2px solid transparent;
+  transition: color .2s ease, border-color .2s ease;
+}
+.site-nav a:hover { color: var(--ink); }
+.site-nav a[aria-current="true"] {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+@media (width < 720px) { .site-nav { display: none; } }
+
+.bench-toggle {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .04em;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .5rem .9rem;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--paper-2);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .2s ease, background-color .2s ease;
+}
+.bench-toggle:hover { border-color: var(--accent); }
+.bench-toggle .sw {
+  width: .8rem; height: .8rem;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+/* ====================================================================
+   Werkbank (Popover API + @starting-style)
+   ==================================================================== */
+.bench {
+  position: fixed;
+  inset: auto;
+  top: calc(var(--head-h) + .75rem);
+  right: max(1rem, calc((100vw - 1120px) / 2));
+  left: auto;
+  margin: 0;
+  width: min(22.5rem, calc(100vw - 2rem));
+  padding: 1.4rem 1.4rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 24px 60px -24px color-mix(in oklab, var(--ink) 45%, transparent);
+  opacity: 0;
+  translate: 0 -10px;
+  transition:
+    opacity .28s ease,
+    translate .28s ease,
+    display .28s allow-discrete,
+    overlay .28s allow-discrete;
+}
+.bench:popover-open {
+  opacity: 1;
+  translate: 0 0;
+}
+@starting-style {
+  .bench:popover-open {
+    opacity: 0;
+    translate: 0 -10px;
+  }
+}
+.bench h2 {
+  font-size: 1.15rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.bench-close {
+  font: inherit;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  padding: .2rem .4rem;
+  border-radius: var(--r-sm);
+  line-height: 1;
+}
+.bench-close:hover { color: var(--ink); background: var(--paper-2); }
+.bench > p {
+  font-size: .88rem;
+  color: var(--ink-2);
+  margin: .4rem 0 1.2rem;
+}
+.bench .ctl { margin-bottom: 1.1rem; }
+.bench .ctl > .lbl {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  letter-spacing: .05em;
+  margin-bottom: .45rem;
+  color: var(--ink-2);
+}
+.bench .ctl output { color: var(--ink); }
+.bench input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  margin: 0;
+}
+.bench fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.1rem;
+  display: flex;
+  gap: .4rem;
+}
+.bench legend {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  letter-spacing: .05em;
+  color: var(--ink-2);
+  padding: 0;
+  margin-bottom: .45rem;
+}
+.bench fieldset label {
+  flex: 1;
+  text-align: center;
+  font-size: .85rem;
+  padding: .42rem .25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+.bench fieldset label:has(input:checked) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.bench fieldset label:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.bench fieldset input { position: absolute; opacity: 0; pointer-events: none; }
+.bench-actions { display: flex; gap: .6rem; }
+.bench-actions button {
+  font: inherit;
+  font-size: .9rem;
+  padding: .55rem .9rem;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: filter .2s ease, border-color .2s ease;
+}
+#ctlShuffle {
+  flex: 1;
+  border: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+#ctlShuffle:hover { filter: brightness(1.08); }
+#ctlReset {
+  border: 1px solid var(--line);
+  background: none;
+  color: var(--ink-2);
+}
+#ctlReset:hover { border-color: var(--ink-2); color: var(--ink); }
+
+/* ====================================================================
+   Hero
+   ==================================================================== */
+.hero {
+  padding: clamp(4rem, 10vh, 7.5rem) 0 clamp(3.5rem, 8vh, 6rem);
+}
+.hero h1 {
+  font-size: var(--fs-hero);
+  font-weight: 750;
+  font-variation-settings: "opsz" 96;
+  max-width: 14ch;
+}
+.hero h1 .hl {
+  font-style: normal;
+  color: var(--accent);
+  position: relative;
+  white-space: nowrap;
+}
+.hero h1 .hl::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 .04em 0;
+  height: .06em;
+  background: var(--accent);
+  border-radius: 99px;
+  transform-origin: left;
+}
+.hero .lede {
+  font-size: clamp(1.1rem, 1rem + .6vw, 1.35rem);
+  color: var(--ink-2);
+  max-width: 52ch;
+  margin-top: 1.75rem;
+}
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .9rem;
+  margin-top: 2.25rem;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: .8rem 1.5rem;
+  border-radius: var(--r);
+  transition: filter .2s ease, border-color .2s ease, translate .2s ease;
+}
+.btn:hover { translate: 0 -2px; }
+.btn-solid { background: var(--accent); color: var(--accent-ink); }
+.btn-solid:hover { filter: brightness(1.08); }
+.btn-ghost { border: 1px solid var(--line); color: var(--ink); }
+.btn-ghost:hover { border-color: var(--accent); }
+
+/* Live-Token-Strip — die Visitenkarte des Konzepts */
+.tokens {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem 1rem;
+}
+.tokens .hint {
+  font-size: .88rem;
+  color: var(--ink-2);
+  margin-right: .25rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  padding: .42rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--paper-2);
+  white-space: nowrap;
+}
+.chip .swatch {
+  width: .78rem; height: .78rem;
+  border-radius: 4px;
+  background: var(--accent);
+  flex: none;
+}
+.chip-btn {
+  cursor: pointer;
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  background: color-mix(in oklab, var(--accent) 9%, transparent);
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  transition: background-color .2s ease;
+}
+.chip-btn:hover { background: color-mix(in oklab, var(--accent) 18%, transparent); }
+
+/* ====================================================================
+   Sektionen allgemein
+   ==================================================================== */
+.section { padding-block: clamp(3.5rem, 9vh, 6.5rem); }
+.section-head { margin-bottom: clamp(2rem, 5vh, 3.5rem); }
+.section-head h2 { font-size: var(--fs-h2); }
+.section-head .sub {
+  color: var(--ink-2);
+  max-width: 52ch;
+  margin-top: 1rem;
+  font-size: 1.05rem;
+}
+
+/* Scroll-Reveal: nativ via animation-timeline, sonst IntersectionObserver */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 45%;
+    }
+  }
+  .reveal.io-pending { opacity: 0; translate: 0 2.2rem; }
+  .reveal.io-in {
+    opacity: 1;
+    translate: 0 0;
+    transition: opacity .7s ease, translate .7s cubic-bezier(.2,.7,.2,1);
+  }
+}
+@keyframes rise {
+  from { opacity: 0; translate: 0 2.2rem; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* ====================================================================
+   Arbeiten
+   ==================================================================== */
+.works {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(26rem, 100%), 1fr));
+  gap: clamp(1.75rem, 4vw, 3rem);
+}
+@media (width >= 920px) {
+  .works > .card:nth-child(even) { margin-top: 3.5rem; }
+}
+/* :has(): beim Hovern einer Karte treten die anderen zurück */
+@media (hover: hover) {
+  .works:has(.card:hover) .card:not(:hover) { opacity: .55; }
+  .card { transition: opacity .35s ease; }
+}
+.card {
+  display: block;
+  text-decoration: none;
+}
+.card .shot {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--paper-2);
+  container-type: inline-size;
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+.card:hover .shot {
+  border-color: color-mix(in oklab, var(--accent) 55%, var(--line));
+  box-shadow: 0 18px 50px -22px color-mix(in oklab, var(--ink) 38%, transparent);
+}
+.card-meta { padding: 1.1rem .25rem 0; }
+.card-meta h3 {
+  font-size: var(--fs-h3);
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+}
+.card-meta h3 .year {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: .72rem;
+  color: var(--ink-2);
+  letter-spacing: .06em;
+}
+.card-meta p { color: var(--ink-2); margin-top: .45rem; font-size: .97rem; max-width: 46ch; }
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .8rem;
+  padding: 0;
+  list-style: none;
+}
+.card-tags li {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .05em;
+  padding: .22rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  color: var(--ink-2);
+}
+
+/* ---- Mini-Mockups: jedes Thumbnail ist ein kleines CSS-Interface ---- */
+.shot { aspect-ratio: 16 / 11; display: grid; grid-template-rows: auto 1fr; }
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .55rem .75rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+.chrome i {
+  width: .42rem; height: .42rem;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--ink) 22%, transparent);
+}
+.chrome .url {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  color: var(--ink-2);
+  margin-left: .5rem;
+  padding: .12rem .65rem;
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  border-radius: 99px;
+}
+.mock { position: relative; padding: clamp(.8rem, 6cqi, 1.4rem); display: grid; gap: .7rem; min-height: 0; }
+
+/* Fake-Textzeilen */
+.ln {
+  height: .45rem;
+  border-radius: 99px;
+  background: color-mix(in oklab, var(--ink) 18%, transparent);
+}
+.ln.w60 { width: 60%; } .ln.w80 { width: 80%; } .ln.w40 { width: 40%; }
+
+/* 01 — Fjell (Bergsport-Shop) */
+.shot-fjell .mock { grid-template-rows: 1fr auto; }
+.shot-fjell .m-sky {
+  position: relative;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: linear-gradient(to bottom,
+    color-mix(in oklab, var(--accent) 28%, var(--paper-2)),
+    color-mix(in oklab, var(--accent) 8%, var(--paper-2)));
+  display: grid;
+  align-content: end;
+  padding: .8rem;
+}
+.shot-fjell .m-sky::before, .shot-fjell .m-sky::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 72%;
+  background: color-mix(in oklab, var(--ink) 72%, var(--accent));
+  clip-path: polygon(0 100%, 12% 42%, 26% 68%, 45% 8%, 62% 55%, 78% 30%, 100% 100%);
+  opacity: .9;
+}
+.shot-fjell .m-sky::after {
+  height: 48%;
+  opacity: .45;
+  clip-path: polygon(0 100%, 18% 30%, 38% 75%, 58% 22%, 80% 65%, 100% 35%, 100% 100%);
+}
+.shot-fjell .m-sky .ln { position: relative; z-index: 1; background: color-mix(in oklab, var(--paper) 85%, transparent); }
+.shot-fjell .m-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+.shot-fjell .m-tile {
+  aspect-ratio: 5 / 4;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  display: grid;
+  align-content: end;
+  gap: .3rem;
+  padding: .5rem;
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--accent) 16%, transparent), transparent 55%),
+    var(--paper);
+}
+.shot-fjell .m-tile .ln { height: .32rem; }
+.shot-fjell .m-tile .price { width: 38%; background: var(--accent); }
+@container (width < 340px) { .shot-fjell .m-grid { grid-template-columns: repeat(2, 1fr); } .shot-fjell .m-tile:nth-child(3) { display: none; } }
+
+/* 02 — Tonfall (Podcast-Studio) */
+.shot-tonfall .mock {
+  grid-template-rows: auto 1fr auto;
+  background: color-mix(in oklab, var(--ink) 88%, var(--accent));
+  --mock-fg: color-mix(in oklab, var(--paper) 88%, transparent);
+}
+.shot-tonfall .ln { background: color-mix(in oklab, var(--mock-fg) 45%, transparent); }
+.shot-tonfall .m-title .ln:first-child { background: var(--mock-fg); height: .6rem; }
+.m-wave {
+  display: flex;
+  align-items: center;
+  gap: 4.5%;
+  min-height: 0;
+  padding-block: .4rem;
+}
+.m-wave i {
+  flex: 1;
+  border-radius: 99px;
+  background: var(--accent);
+  height: var(--h, 30%);
+  transition: height .4s ease;
+}
+.m-wave i:nth-child(1) { --h: 28%; } .m-wave i:nth-child(2) { --h: 62%; }
+.m-wave i:nth-child(3) { --h: 90%; } .m-wave i:nth-child(4) { --h: 48%; }
+.m-wave i:nth-child(5) { --h: 74%; } .m-wave i:nth-child(6) { --h: 36%; }
+.m-wave i:nth-child(7) { --h: 82%; } .m-wave i:nth-child(8) { --h: 55%; }
+.m-wave i:nth-child(9) { --h: 68%; } .m-wave i:nth-child(10) { --h: 30%; }
+.m-wave i:nth-child(11) { --h: 52%; } .m-wave i:nth-child(12) { --h: 22%; }
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover .m-wave i {
+    animation: bounce 1s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -120ms);
+  }
+  .m-wave i:nth-child(odd) { --i: 1; }
+  .m-wave i:nth-child(3n) { --i: 2; }
+  .m-wave i:nth-child(4n) { --i: 3; }
+}
+@keyframes bounce { from { height: 18%; } to { height: var(--h, 60%); } }
+.shot-tonfall .m-player { display: flex; align-items: center; gap: .7rem; }
+.shot-tonfall .m-play {
+  width: 1.6rem; height: 1.6rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  display: grid;
+  place-items: center;
+}
+.shot-tonfall .m-play::before {
+  content: "";
+  width: .42rem; height: .5rem;
+  background: var(--accent-ink);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  translate: 1px 0;
+}
+.shot-tonfall .m-track { flex: 1; height: .28rem; border-radius: 99px; background: color-mix(in oklab, var(--mock-fg) 30%, transparent); position: relative; }
+.shot-tonfall .m-track::before { content: ""; position: absolute; inset: 0 62% 0 0; border-radius: inherit; background: var(--accent); }
+
+/* 03 — MORGEN (Stadtmagazin) */
+.shot-morgen .mock { grid-template-columns: auto 1fr; grid-template-rows: 1fr; align-items: stretch; gap: 1rem; }
+.shot-morgen .m-letter {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3.5rem, 38cqi, 7.5rem);
+  line-height: .8;
+  letter-spacing: -0.05em;
+  color: var(--accent);
+  align-self: end;
+}
+.shot-morgen .m-cols { display: grid; gap: .45rem; align-content: center; }
+.shot-morgen .m-cols .ln { height: .34rem; }
+.shot-morgen .m-cols .head { height: .7rem; width: 88%; background: color-mix(in oklab, var(--ink) 78%, transparent); margin-bottom: .35rem; }
+.shot-morgen .m-cols .cap { width: 30%; background: var(--accent); }
+@container (width < 340px) { .shot-morgen .m-cols .ln:nth-child(n+7) { display: none; } }
+
+/* 04 — Klara (Fintech-Dashboard) */
+.shot-klara .mock { grid-template-columns: 26% 1fr; gap: .8rem; }
+.shot-klara .m-side {
+  border-right: 1px solid var(--line-soft);
+  padding-right: .8rem;
+  display: grid;
+  gap: .55rem;
+  align-content: start;
+}
+.shot-klara .m-side .ln { height: .38rem; }
+.shot-klara .m-side .ln:first-child { background: var(--accent); width: 55%; }
+.shot-klara .m-main { display: grid; grid-template-rows: auto 1fr; gap: .7rem; min-height: 0; }
+.shot-klara .m-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .55rem; }
+.shot-klara .m-stat {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: .45rem .55rem;
+  display: grid;
+  gap: .3rem;
+}
+.shot-klara .m-stat .ln { height: .3rem; }
+.shot-klara .m-stat .big { height: .5rem; width: 70%; background: color-mix(in oklab, var(--ink) 65%, transparent); }
+.shot-klara .m-chart {
+  border-radius: var(--r-sm);
+  background:
+    linear-gradient(to top, color-mix(in oklab, var(--accent) 30%, transparent), transparent 75%);
+  clip-path: polygon(0 100%, 0 72%, 14% 80%, 30% 52%, 46% 62%, 62% 34%, 78% 44%, 100% 18%, 100% 100%);
+  min-height: 2.5rem;
+}
+@container (width < 340px) { .shot-klara .m-side { display: none; } .shot-klara .mock { grid-template-columns: 1fr; } }
+
+/* ====================================================================
+   Vorgehen
+   ==================================================================== */
+#vorgehen { background: var(--paper-2); border-block: 1px solid var(--line-soft); }
+.steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--paper);
+}
+.steps li {
+  counter-increment: step;
+  padding: 1.75rem 1.5rem 1.9rem;
+  border-top: 1px solid var(--line-soft);
+  border-left: 1px solid var(--line-soft);
+  position: relative;
+}
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  color: var(--accent);
+  letter-spacing: .08em;
+}
+.steps h3 {
+  font-size: 1.3rem;
+  margin: .6rem 0 .55rem;
+}
+.steps p { color: var(--ink-2); font-size: .95rem; }
+
+/* ====================================================================
+   Über
+   ==================================================================== */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: start;
+}
+@media (width < 800px) { .about-grid { grid-template-columns: 1fr; } }
+.about-grid .bio p + p { margin-top: 1rem; }
+.about-grid .bio { font-size: 1.1rem; }
+.about-facts {
+  display: grid;
+  gap: 1.5rem;
+}
+.fact h3 {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--ink-2);
+  margin-bottom: .6rem;
+}
+.fact ul { list-style: none; margin: 0; padding: 0; }
+.fact li {
+  padding: .55rem 0;
+  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: .97rem;
+}
+.fact li span:last-child { color: var(--ink-2); font-family: var(--font-mono); font-size: .78rem; align-self: center; }
+
+/* ====================================================================
+   Footer / Kontakt
+   ==================================================================== */
+.site-foot {
+  border-top: 1px solid var(--line);
+  padding: clamp(3.5rem, 9vh, 6rem) 0 2.5rem;
+}
+.foot-cta h2 {
+  font-size: clamp(2.4rem, 1rem + 6vw, 5.5rem);
+  font-weight: 750;
+}
+.foot-cta .mail {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1rem + 1.6vw, 2rem);
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .2em;
+}
+.foot-cta p { color: var(--ink-2); margin-top: .9rem; }
+.foot-meta {
+  margin-top: clamp(2.5rem, 7vh, 4.5rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem 2rem;
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: var(--ink-2);
+}
+.foot-meta .clock { display: inline-flex; align-items: center; gap: .5rem; }
+.foot-meta .clock::before {
+  content: "";
+  width: .5rem; height: .5rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .foot-meta .clock::before { animation: pulse 2.4s ease-in-out infinite; }
+}
+@keyframes pulse { 50% { opacity: .35; } }
+
+/* ====================================================================
+   Reduced Motion: alles Dekorative aus
+   ==================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"></div>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top">Jonas&nbsp;Reiter<i aria-hidden="true"></i></a>
+    <nav class="site-nav" aria-label="Hauptnavigation">
+      <a href="#arbeiten">Arbeiten</a>
+      <a href="#vorgehen">Vorgehen</a>
+      <a href="#ueber">Über</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+    <button class="bench-toggle" popovertarget="werkbank">
+      <span class="sw" aria-hidden="true"></span>Werkbank
+    </button>
+  </div>
+</header>
+
+<!-- Werkbank: die Design-Tokens dieser Seite, zum Selberdrehen -->
+<div id="werkbank" class="bench" popover aria-labelledby="benchTitle">
+  <h2 id="benchTitle">Werkbank
+    <button class="bench-close" popovertarget="werkbank" popovertargetaction="hide" aria-label="Werkbank schließen">×</button>
+  </h2>
+  <p>Diese Seite läuft auf Design-Tokens — genau so baue ich auch für Kund:innen. Dreh ruhig dran, nichts geht kaputt.</p>
+
+  <div class="ctl">
+    <div class="lbl"><label for="ctlHue">--farbton</label><output id="outHue" for="ctlHue">264°</output></div>
+    <input type="range" id="ctlHue" min="0" max="360" step="1" value="264">
+  </div>
+
+  <div class="ctl">
+    <div class="lbl"><label for="ctlRadius">--rundung</label><output id="outRadius" for="ctlRadius">14px</output></div>
+    <input type="range" id="ctlRadius" min="0" max="28" step="1" value="14">
+  </div>
+
+  <fieldset>
+    <legend>--modus</legend>
+    <label><input type="radio" name="mode" value="auto" checked>Auto</label>
+    <label><input type="radio" name="mode" value="light">Hell</label>
+    <label><input type="radio" name="mode" value="dark">Dunkel</label>
+  </fieldset>
+
+  <div class="bench-actions">
+    <button id="ctlShuffle" type="button">Überrasch mich</button>
+    <button id="ctlReset" type="button">Zurücksetzen</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- ============================== Hero ============================== -->
+  <section class="hero wrap" aria-labelledby="heroTitle">
+    <p class="eyebrow">Webdesign &amp; Frontend — Wien</p>
+    <h1 id="heroTitle">
+      <span class="w">Interfaces,</span> <span class="w">die</span> <span class="w">sich</span>
+      <span class="w">anfühlen</span> <span class="w">wie</span> <span class="w">gute</span>
+      <span class="w"><em class="hl">Werkzeuge.</em></span>
+    </h1>
+    <p class="lede">Ich bin Jonas Reiter, unabhängiger Webdesigner. Ich entwerfe und baue Websites
+      für Marken, die mehr wollen als ein Template — von der ersten Skizze bis zur letzten Zeile CSS.</p>
+    <div class="hero-cta">
+      <a class="btn btn-solid" href="mailto:hallo@jonasreiter.at?subject=Projektanfrage">Projekt anfragen</a>
+      <a class="btn btn-ghost" href="#arbeiten">Arbeiten ansehen</a>
+    </div>
+
+    <div class="tokens" role="group" aria-label="Live-Design-Tokens dieser Seite">
+      <span class="hint">Diese Seite läuft live auf Design-Tokens&nbsp;→</span>
+      <span class="chip"><span class="swatch" aria-hidden="true"></span><code>--akzent:&nbsp;<span id="chipHue">oklch(54% .21 264)</span></code></span>
+      <span class="chip"><code>--rundung:&nbsp;<span id="chipRadius">14px</span></code></span>
+      <button class="chip chip-btn" popovertarget="werkbank">Dreh dran ↗</button>
+    </div>
+  </section>
+
+  <!-- ============================ Arbeiten ============================ -->
+  <section id="arbeiten" class="section" aria-labelledby="worksTitle">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Arbeiten · 2023–2026</p>
+        <h2 id="worksTitle">Vier Projekte, vier Systeme.</h2>
+        <p class="sub">Keine Bilderstrecken: Jedes Thumbnail hier ist ein kleines, in CSS gebautes
+          Interface — und hört auf dieselben Tokens wie der Rest der Seite. Probier's mit der Werkbank.</p>
+      </div>
+
+      <div class="works">
+
+        <a class="card reveal" href="mailto:hallo@jonasreiter.at?subject=Case%20Study%3A%20Fjell" aria-label="Fjell — Case Study anfragen">
+          <div class="shot shot-fjell">
+            <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span class="url">fjell.at</span></div>
+            <div class="mock" aria-hidden="true">
+              <div class="m-sky"><div class="ln w60"></div></div>
+              <div class="m-grid">
+                <div class="m-tile"><div class="ln w80"></div><div class="ln price"></div></div>
+                <div class="m-tile"><div class="ln w60"></div><div class="ln price"></div></div>
+                <div class="m-tile"><div class="ln w80"></div><div class="ln price"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-meta">
+            <h3>Fjell <span class="year">2026</span></h3>
+            <p>E-Commerce-Relaunch für einen Bergsport-Ausrüster aus Innsbruck: Shop, Größenberater
+              und Tourenwetter in einem Design-System.</p>
+            <ul class="card-tags"><li>Shop</li><li>Design System</li><li>Konzept → Build</li></ul>
+          </div>
+        </a>
+
+        <a class="card reveal" href="mailto:hallo@jonasreiter.at?subject=Case%20Study%3A%20Tonfall" aria-label="Tonfall — Case Study anfragen">
+          <div class="shot shot-tonfall">
+            <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span class="url">tonfall.studio</span></div>
+            <div class="mock" aria-hidden="true">
+              <div class="m-title"><div class="ln w60"></div></div>
+              <div class="m-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="m-player"><span class="m-play"></span><span class="m-track"></span></div>
+            </div>
+          </div>
+          <div class="card-meta">
+            <h3>Tonfall <span class="year">2025</span></h3>
+            <p>Markenauftritt für ein Podcast-Studio in Berlin. Der Webplayer wurde zum
+              Markenzeichen — Ton, sichtbar gemacht.</p>
+            <ul class="card-tags"><li>Branding</li><li>Audio-Player</li><li>Motion</li></ul>
+          </div>
+        </a>
+
+        <a class="card reveal" href="mailto:hallo@jonasreiter.at?subject=Case%20Study%3A%20MORGEN" aria-label="MORGEN — Case Study anfragen">
+          <div class="shot shot-morgen">
+            <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span class="url">morgen.wien</span></div>
+            <div class="mock" aria-hidden="true">
+              <div class="m-letter">M</div>
+              <div class="m-cols">
+                <div class="ln head"></div>
+                <div class="ln"></div><div class="ln w80"></div><div class="ln"></div>
+                <div class="ln w60"></div><div class="ln"></div><div class="ln w80"></div>
+                <div class="ln cap"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-meta">
+            <h3>MORGEN <span class="year">2024</span></h3>
+            <p>Editorial-Design für ein Wiener Stadtmagazin: ein Lesefluss, der Print-Qualität
+              ins Browserfenster bringt — ohne ein einziges Karussell.</p>
+            <ul class="card-tags"><li>Editorial</li><li>Typografie</li><li>CMS</li></ul>
+          </div>
+        </a>
+
+        <a class="card reveal" href="mailto:hallo@jonasreiter.at?subject=Case%20Study%3A%20Klara" aria-label="Klara — Case Study anfragen">
+          <div class="shot shot-klara">
+            <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span class="url">app.klara.ch</span></div>
+            <div class="mock" aria-hidden="true">
+              <div class="m-side">
+                <div class="ln"></div><div class="ln w80"></div><div class="ln w60"></div><div class="ln w80"></div>
+              </div>
+              <div class="m-main">
+                <div class="m-stats">
+                  <div class="m-stat"><div class="ln big"></div><div class="ln w60"></div></div>
+                  <div class="m-stat"><div class="ln big"></div><div class="ln w60"></div></div>
+                  <div class="m-stat"><div class="ln big"></div><div class="ln w60"></div></div>
+                </div>
+                <div class="m-chart"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-meta">
+            <h3>Klara <span class="year">2024</span></h3>
+            <p>Dashboard-Redesign für ein Zürcher Fintech: Zahlen, die man auf einen Blick
+              versteht — auch am Monatsende.</p>
+            <ul class="card-tags"><li>Produkt</li><li>Dashboard</li><li>Datenviz</li></ul>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ Vorgehen ============================ -->
+  <section id="vorgehen" class="section" aria-labelledby="processTitle">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Vorgehen</p>
+        <h2 id="processTitle">Kein Prozess-Theater.<br>Vier Schritte, jedes Mal.</h2>
+      </div>
+      <ol class="steps reveal">
+        <li>
+          <h3>Zuhören</h3>
+          <p>Was soll die Seite leisten, für wen — und woran messen wir das?
+            Ein Workshop, ehrliche Fragen, ein klares Briefing.</p>
+        </li>
+        <li>
+          <h3>Strukturieren</h3>
+          <p>Inhalt vor Kosmetik: Sitemap, Wireframes und echte Texte,
+            bis der rote Faden trägt.</p>
+        </li>
+        <li>
+          <h3>Gestalten</h3>
+          <p>Design-Tokens statt Pixelfriedhof: Farbe, Typografie und Raster
+            als System, das mit der Marke mitwächst.</p>
+        </li>
+        <li>
+          <h3>Bauen</h3>
+          <p>Semantisches HTML, modernes CSS, so wenig JavaScript wie nötig.
+            Schnell, zugänglich, wartbar.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================== Über ============================== -->
+  <section id="ueber" class="section" aria-labelledby="aboutTitle">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Über mich</p>
+        <h2 id="aboutTitle">Designer, der baut.<br>Entwickler, der gestaltet.</h2>
+      </div>
+      <div class="about-grid reveal">
+        <div class="bio">
+          <p>Seit 2017 gestalte ich Websites — erst in Agenturen in Wien und Hamburg,
+            seit 2021 unabhängig. Mein Steckenpferd: die Lücke zwischen Designdatei und
+            Browser schließen. Was ich entwerfe, kann ich bauen; was ich baue, sieht aus
+            wie entworfen.</p>
+          <p>Ich arbeite allein, aber nicht einsam: Für Fotografie, Text und Backend hole
+            ich Leute dazu, mit denen ich seit Jahren zusammenarbeite. Sie bekommen eine
+            Ansprechperson und ein eingespieltes Team.</p>
+        </div>
+        <div class="about-facts">
+          <div class="fact">
+            <h3>Leistungen</h3>
+            <ul>
+              <li><span>Webdesign &amp; Art Direction</span><span>Konzept</span></li>
+              <li><span>Design-Systeme &amp; Tokens</span><span>System</span></li>
+              <li><span>Frontend (HTML/CSS/JS)</span><span>Build</span></li>
+              <li><span>Audits &amp; Beratung</span><span>Sparring</span></li>
+            </ul>
+          </div>
+          <div class="fact">
+            <h3>Aktuell</h3>
+            <ul>
+              <li><span>Verfügbar ab</span><span>Sep 2026</span></li>
+              <li><span>Projekte pro Jahr</span><span>max. 6</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================ Kontakt ============================ -->
+<footer id="kontakt" class="site-foot">
+  <div class="wrap">
+    <div class="foot-cta reveal">
+      <h2>Sag Hallo.</h2>
+      <a class="mail" href="mailto:hallo@jonasreiter.at">hallo@jonasreiter.at</a>
+      <p>Erzähl mir in drei Sätzen von deinem Projekt — Antwort kommt meist innerhalb eines Tages.</p>
+    </div>
+    <div class="foot-meta">
+      <span>© 2026 Jonas Reiter · Wien</span>
+      <span class="clock">Wien, <span id="clock">–:–</span> Uhr</span>
+      <span>Eine HTML-Datei. Kein Framework. Viel CSS.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+  const root = document.documentElement;
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const DEFAULTS = { hue: 264, radius: 14, mode: "auto" };
+
+  /* ---------- Werkbank: Design-Tokens live verstellen ---------- */
+  const state = { ...DEFAULTS };
+  try {
+    const saved = JSON.parse(localStorage.getItem("jr-tokens") || "{}");
+    if (Number.isFinite(saved.hue)) state.hue = saved.hue;
+    if (Number.isFinite(saved.radius)) state.radius = saved.radius;
+    if (["auto", "light", "dark"].includes(saved.mode)) state.mode = saved.mode;
+  } catch (_) { /* ok */ }
+
+  const ctlHue = document.getElementById("ctlHue");
+  const ctlRadius = document.getElementById("ctlRadius");
+  const outHue = document.getElementById("outHue");
+  const outRadius = document.getElementById("outRadius");
+  const chipHue = document.getElementById("chipHue");
+  const chipRadius = document.getElementById("chipRadius");
+  const modeRadios = [...document.querySelectorAll('input[name="mode"]')];
+
+  function apply(persist = true) {
+    root.style.setProperty("--hue", state.hue);
+    root.style.setProperty("--radius", state.radius);
+    if (state.mode === "auto") delete root.dataset.mode;
+    else root.dataset.mode = state.mode;
+
+    ctlHue.value = state.hue;
+    ctlRadius.value = state.radius;
+    outHue.textContent = `${Math.round(state.hue)}°`;
+    outRadius.textContent = `${Math.round(state.radius)}px`;
+    chipHue.textContent = `oklch(54% .21 ${Math.round(state.hue)})`;
+    chipRadius.textContent = `${Math.round(state.radius)}px`;
+    modeRadios.forEach(r => { r.checked = r.value === state.mode; });
+
+    if (persist) {
+      try { localStorage.setItem("jr-tokens", JSON.stringify(state)); } catch (_) { /* ok */ }
+    }
+  }
+
+  /* View Transition als sanfter Crossfade beim großen Themenwechsel */
+  function withTransition(fn) {
+    if (document.startViewTransition && !reduceMotion.matches) {
+      document.startViewTransition(fn);
+    } else {
+      fn();
+    }
+  }
+
+  ctlHue.addEventListener("input", () => { state.hue = +ctlHue.value; apply(); });
+  ctlRadius.addEventListener("input", () => { state.radius = +ctlRadius.value; apply(); });
+  modeRadios.forEach(r => r.addEventListener("change", () => {
+    state.mode = r.value;
+    withTransition(() => apply());
+  }));
+
+  document.getElementById("ctlShuffle").addEventListener("click", () => {
+    state.hue = Math.round(Math.random() * 360);
+    state.radius = Math.round(Math.random() * 28);
+    withTransition(() => apply());
+  });
+  document.getElementById("ctlReset").addEventListener("click", () => {
+    Object.assign(state, DEFAULTS);
+    withTransition(() => apply());
+  });
+
+  apply(false);
+
+  /* ---------- Hero-Intro: Wort-Stagger mit der Web Animations API ---------- */
+  if (!reduceMotion.matches && "animate" in Element.prototype) {
+    document.querySelectorAll(".hero h1 .w").forEach((word, i) => {
+      word.style.display = "inline-block";
+      word.animate(
+        [
+          { opacity: 0, transform: "translateY(0.7em) rotate(2deg)" },
+          { opacity: 1, transform: "translateY(0) rotate(0deg)" }
+        ],
+        { duration: 650, delay: 120 + i * 70, easing: "cubic-bezier(.2,.7,.2,1)", fill: "backwards" }
+      );
+    });
+    const lede = document.querySelector(".hero .lede");
+    const cta = document.querySelector(".hero-cta");
+    const tokens = document.querySelector(".tokens");
+    [lede, cta, tokens].forEach((el, i) => {
+      if (!el) return;
+      el.animate(
+        [{ opacity: 0, transform: "translateY(1rem)" }, { opacity: 1, transform: "translateY(0)" }],
+        { duration: 600, delay: 550 + i * 130, easing: "ease-out", fill: "backwards" }
+      );
+    });
+  }
+
+  /* ---------- Scroll-Reveal-Fallback (nur ohne native Scroll-Timelines) ---------- */
+  const nativeTimeline = CSS.supports("animation-timeline: view()");
+  if (!nativeTimeline && !reduceMotion.matches && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add("io-in");
+          e.target.classList.remove("io-pending");
+          io.unobserve(e.target);
+        }
+      }
+    }, { rootMargin: "0px 0px -12% 0px" });
+    document.querySelectorAll(".reveal").forEach(el => {
+      el.classList.add("io-pending");
+      io.observe(el);
+    });
+  }
+
+  /* ---------- Scrollspy für die Navigation ---------- */
+  const navLinks = [...document.querySelectorAll(".site-nav a")];
+  if ("IntersectionObserver" in window && navLinks.length) {
+    const byId = new Map(navLinks.map(a => [a.getAttribute("href").slice(1), a]));
+    const spy = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        const link = byId.get(e.target.id);
+        if (!link) continue;
+        if (e.isIntersecting) {
+          navLinks.forEach(a => a.removeAttribute("aria-current"));
+          link.setAttribute("aria-current", "true");
+        }
+      }
+    }, { rootMargin: "-35% 0px -55% 0px" });
+    byId.forEach((_, id) => {
+      const sec = document.getElementById(id);
+      if (sec) spy.observe(sec);
+    });
+  }
+
+  /* ---------- Wiener Uhrzeit im Footer ---------- */
+  const clock = document.getElementById("clock");
+  if (clock) {
+    const fmt = new Intl.DateTimeFormat("de-AT", {
+      hour: "2-digit", minute: "2-digit", timeZone: "Europe/Vienna"
+    });
+    const tick = () => { clock.textContent = fmt.format(new Date()); };
+    tick();
+    setInterval(tick, 30_000);
+  }
+})();
+</script>
+</body>
+</html>
