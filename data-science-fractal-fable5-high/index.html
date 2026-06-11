@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Vera Lindqvist — Data Science Researcher</title>
+<meta name="description" content="Portfolio of Dr. Vera Lindqvist, researcher in computational statistics, dynamical systems and machine learning. The background is a Mandelbrot set rendered live in a WebGL2 fragment shader — scroll to dive deeper.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:    #f2ead9;
+    --paper-90: rgba(242, 234, 217, 0.92);
+    --paper-2:  #e7dcc3;
+    --ink:      #211c16;
+    --ink-soft: #4a4136;
+    --rust:     #a8442a;
+    --rust-deep:#7e2f1c;
+    --ochre:    #b08a4a;
+    --rule:     rgba(33, 28, 22, 0.28);
+    --serif: "Fraunces", Georgia, serif;
+    --mono:  "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-weight: 340;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- fractal canvas ---------- */
+  #fractal {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: var(--paper);
+  }
+  /* fallback texture if WebGL2 is unavailable */
+  body.no-webgl #fractal {
+    background:
+      radial-gradient(120% 90% at 70% 10%, rgba(176,138,74,.25), transparent 60%),
+      radial-gradient(100% 80% at 20% 90%, rgba(168,68,42,.18), transparent 55%),
+      var(--paper);
+  }
+
+  /* ---------- depth progress bar (scroll-driven animation) ---------- */
+  #depth-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--rust);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    z-index: 20;
+    display: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    #depth-bar {
+      display: block;
+      animation: grow linear both;
+      animation-timeline: scroll(root);
+    }
+    @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  }
+
+  /* ---------- depth gauge ---------- */
+  #gauge {
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 15;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    background: var(--paper-90);
+    border: 1px solid var(--rule);
+    padding: 0.4rem 0.65rem;
+    border-radius: 2px;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  #gauge .z { color: var(--rust-deep); font-weight: 500; }
+  @media (max-width: 640px) { #gauge { display: none; } }
+
+  /* ---------- skip link ---------- */
+  .skip-link {
+    position: absolute;
+    left: -999px;
+    top: 0.5rem;
+    z-index: 50;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.5rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+  }
+  .skip-link:focus { left: 0.5rem; }
+
+  /* ---------- header ---------- */
+  header.site {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem clamp(1rem, 4vw, 2.5rem);
+    background: var(--paper-90);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .brand {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+  }
+  .brand b { color: var(--rust); font-weight: 500; }
+  nav.primary ul {
+    display: flex;
+    gap: clamp(0.75rem, 2.5vw, 1.75rem);
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  nav.primary a {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+  }
+  nav.primary a:hover,
+  nav.primary a:focus-visible { color: var(--rust-deep); border-bottom-color: var(--rust); }
+  @media (max-width: 560px) {
+    nav.primary li.opt { display: none; }
+  }
+
+  :focus-visible { outline: 2px solid var(--rust); outline-offset: 3px; }
+
+  /* ---------- layout ---------- */
+  main {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 4vw, 2rem);
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    min-height: 92svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 5rem;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rust-deep);
+    margin: 0 0 1rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 8vw, 4.75rem);
+    font-weight: 560;
+    font-variation-settings: "opsz" 100;
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    margin: 0 0 1.25rem;
+    text-wrap: balance;
+  }
+  .hero h1 em { font-style: italic; font-weight: 400; color: var(--rust-deep); }
+  .hero .lede {
+    max-width: 36rem;
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    color: var(--ink-soft);
+    margin: 0 0 2rem;
+    text-wrap: pretty;
+  }
+  .hero-links { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .hero-links a {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+    background: var(--paper-90);
+    padding: 0.45rem 0.85rem;
+    border-radius: 2px;
+    transition: border-color 160ms ease, color 160ms ease;
+  }
+  .hero-links a:hover, .hero-links a:focus-visible { border-color: var(--rust); color: var(--rust-deep); }
+  .scroll-hint {
+    margin-top: 4rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .scroll-hint::after { content: " ↓"; color: var(--rust); }
+
+  /* ---------- sections ---------- */
+  section.card {
+    background: var(--paper-90);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    margin: 38vh 0;
+    box-shadow: 0 1px 0 rgba(33,28,22,.08), 0 14px 40px -24px rgba(33,28,22,.45);
+  }
+  section.card:first-of-type { margin-top: 24vh; }
+
+  h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+    font-weight: 540;
+    line-height: 1.15;
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.01em;
+  }
+  .sec-no {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--rust-deep);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .rule {
+    height: 1px;
+    background: var(--rule);
+    border: 0;
+    margin: 1.25rem 0 1.5rem;
+  }
+  p { margin: 0 0 1rem; text-wrap: pretty; }
+  p:last-child { margin-bottom: 0; }
+  a { color: var(--rust-deep); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--rust); }
+
+  /* research focus grid */
+  .focus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .focus-grid article {
+    border: 1px solid var(--rule);
+    background: var(--paper-2);
+    padding: 1.1rem 1.2rem;
+    border-radius: 2px;
+  }
+  .focus-grid h3 {
+    font-size: 1.05rem;
+    font-weight: 560;
+    margin: 0 0 0.45rem;
+  }
+  .focus-grid p { font-size: 0.92rem; color: var(--ink-soft); margin: 0; }
+
+  /* publications */
+  ol.pubs { list-style: none; margin: 0; padding: 0; }
+  ol.pubs li {
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 3.4rem 1fr;
+    gap: 1rem;
+  }
+  ol.pubs li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .pub-year {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding-top: 0.2rem;
+  }
+  .pub-title { font-weight: 560; font-size: 1.02rem; margin: 0 0 0.2rem; }
+  .pub-meta { font-size: 0.88rem; color: var(--ink-soft); margin: 0; }
+  .venue {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    color: var(--rust-deep);
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    padding: 0.1rem 0.4rem;
+    margin-right: 0.45rem;
+    display: inline-block;
+    vertical-align: 1px;
+  }
+
+  /* projects */
+  ul.projects { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  ul.projects li {
+    border: 1px solid var(--rule);
+    background: var(--paper-2);
+    border-radius: 2px;
+    padding: 1.1rem 1.2rem;
+  }
+  ul.projects h3 { font-family: var(--mono); font-size: 0.9rem; font-weight: 500; margin: 0 0 0.35rem; }
+  ul.projects h3 a { text-decoration: none; color: var(--ink); }
+  ul.projects h3 a:hover { color: var(--rust-deep); }
+  ul.projects p { font-size: 0.92rem; color: var(--ink-soft); margin: 0; }
+  .stars { font-family: var(--mono); font-size: 0.7rem; color: var(--ochre); margin-left: 0.5rem; }
+
+  /* talks */
+  ul.talks { list-style: none; margin: 0; padding: 0; }
+  ul.talks li { padding: 0.55rem 0; border-bottom: 1px dashed var(--rule); }
+  ul.talks li:last-child { border-bottom: 0; }
+  ul.talks .when { font-family: var(--mono); font-size: 0.74rem; color: var(--ink-soft); margin-right: 0.6rem; }
+
+  /* footer */
+  footer.site {
+    background: var(--ink);
+    color: var(--paper);
+    margin-top: 40vh;
+  }
+  footer.site .inner {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 3rem clamp(1rem, 4vw, 2rem) 2.5rem;
+  }
+  footer.site h2 { color: var(--paper); }
+  footer.site a { color: #e3b9a0; }
+  footer.site .mail {
+    font-family: var(--mono);
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    display: inline-block;
+    margin: 0.75rem 0 1.5rem;
+  }
+  .colophon {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    line-height: 1.7;
+    color: rgba(242,234,217,0.6);
+    border-top: 1px solid rgba(242,234,217,0.18);
+    padding-top: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  /* ---------- reveal animation ---------- */
+  .reveal { opacity: 0; transform: translateY(22px); }
+  .reveal.vis { opacity: 1; transform: none; transition: opacity 700ms ease, transform 700ms cubic-bezier(.22,.8,.3,1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    #depth-bar { animation: none; transform: scaleX(1); }
+    section.card { margin: 14vh 0; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<canvas id="fractal" aria-hidden="true"></canvas>
+<div id="depth-bar" aria-hidden="true"></div>
+<div id="gauge" aria-hidden="true">depth <span class="z" id="gauge-zoom">×1</span> · c ≈ −0.743644 + 0.131826i</div>
+
+<header class="site">
+  <a class="brand" href="#top">v.lindqvist<b>@</b>complexity.lab</a>
+  <nav class="primary" aria-label="Primary">
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li class="opt"><a href="#research">Research</a></li>
+      <li><a href="#publications">Publications</a></li>
+      <li class="opt"><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top">
+    <p class="kicker">Computational Statistics · Dynamical Systems · ML</p>
+    <h1>Vera Lindqvist studies how <em>simple rules</em> produce <em>unreasonable complexity</em>.</h1>
+    <p class="lede">
+      Senior researcher at the Institute for Computational Science, Zürich.
+      I build statistical methods and open-source tools for understanding chaotic,
+      high-dimensional systems — from climate ensembles to training dynamics of neural networks.
+    </p>
+    <div class="hero-links">
+      <a href="#publications">Google Scholar</a>
+      <a href="#projects">GitHub</a>
+      <a href="#contact">ORCID 0000-0002-1825-0097</a>
+      <a href="#contact">CV (PDF)</a>
+    </div>
+    <p class="scroll-hint">Scroll to descend into the set</p>
+  </section>
+
+  <section class="card reveal" id="about" aria-labelledby="about-h">
+    <span class="sec-no">01 / About</span>
+    <h2 id="about-h">A statistician who fell into a strange attractor</h2>
+    <hr class="rule">
+    <p>
+      I trained as a mathematical statistician (PhD, ETH Zürich, 2017) and spent my postdoc
+      years embedded with climate physicists, where I learned that the hardest part of data
+      science is rarely the model — it is quantifying what the model <em>cannot</em> know.
+      My work since then sits at the intersection of uncertainty quantification, ergodic
+      theory and modern machine learning.
+    </p>
+    <p>
+      The page you are reading is itself a small experiment: the background is the boundary
+      of the Mandelbrot set, computed live on your GPU. As you scroll, the viewport descends
+      roughly four orders of magnitude into Seahorse Valley — a reminder that the boundary
+      between order and chaos has infinite detail at every scale, which is more or less how
+      real-world data behaves too.
+    </p>
+  </section>
+
+  <section class="card reveal" id="research" aria-labelledby="research-h">
+    <span class="sec-no">02 / Research</span>
+    <h2 id="research-h">Current research directions</h2>
+    <hr class="rule">
+    <div class="focus-grid">
+      <article>
+        <h3>Uncertainty quantification</h3>
+        <p>Conformal prediction and calibrated ensembles for simulators whose error
+        structure is non-stationary — weather, epidemics, markets.</p>
+      </article>
+      <article>
+        <h3>Learning dynamical systems</h3>
+        <p>Identifying governing equations and invariant measures from short, noisy
+        trajectories; Koopman-operator methods meeting deep learning.</p>
+      </article>
+      <article>
+        <h3>Training dynamics of NNs</h3>
+        <p>Treating gradient descent as a dynamical system: edge-of-stability
+        phenomena, basin geometry, and what loss-landscape fractality implies
+        for generalisation.</p>
+      </article>
+      <article>
+        <h3>Scientific visualisation</h3>
+        <p>Perceptually honest colour maps and GPU-accelerated tooling so that
+        a figure never claims more certainty than the data supports.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card reveal" id="publications" aria-labelledby="pubs-h">
+    <span class="sec-no">03 / Selected publications</span>
+    <h2 id="pubs-h">Writing</h2>
+    <hr class="rule">
+    <ol class="pubs">
+      <li>
+        <span class="pub-year">2026</span>
+        <div>
+          <p class="pub-title">Fractal basin boundaries predict instability in deep-network fine-tuning</p>
+          <p class="pub-meta"><span class="venue">ICML</span> Lindqvist, V., Okafor, T., &amp; Brandt, S. — Oral, top 2% of submissions.</p>
+        </div>
+      </li>
+      <li>
+        <span class="pub-year">2025</span>
+        <div>
+          <p class="pub-title">Conformal prediction under regime shifts: distribution-free coverage for chaotic systems</p>
+          <p class="pub-meta"><span class="venue">JMLR</span> Lindqvist, V., &amp; Aubert, M. — 26(118):1–43.</p>
+        </div>
+      </li>
+      <li>
+        <span class="pub-year">2024</span>
+        <div>
+          <p class="pub-title">Koopman ensembles for short-horizon climate downscaling</p>
+          <p class="pub-meta"><span class="venue">NeurIPS</span> Okafor, T., Lindqvist, V., Reyes, P., &amp; Hahn, K. — Spotlight.</p>
+        </div>
+      </li>
+      <li>
+        <span class="pub-year">2023</span>
+        <div>
+          <p class="pub-title">Estimating Lyapunov spectra from irregularly sampled observations</p>
+          <p class="pub-meta"><span class="venue">Phys. Rev. E</span> Lindqvist, V., &amp; Steiner, J. — 108, 044212.</p>
+        </div>
+      </li>
+      <li>
+        <span class="pub-year">2021</span>
+        <div>
+          <p class="pub-title">The cartographer's dilemma: perceptual colour maps for divergent scientific data</p>
+          <p class="pub-meta"><span class="venue">IEEE VIS</span> Lindqvist, V. — Best paper honourable mention.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="card reveal" id="projects" aria-labelledby="projects-h">
+    <span class="sec-no">04 / Open source</span>
+    <h2 id="projects-h">Tools I maintain</h2>
+    <hr class="rule">
+    <ul class="projects">
+      <li>
+        <h3><a href="#projects">ergodic-py</a><span class="stars">★ 3.1k</span></h3>
+        <p>Invariant-measure estimation and Lyapunov analysis for observed dynamical
+        systems. JAX backend, runs on a laptop or a cluster.</p>
+      </li>
+      <li>
+        <h3><a href="#projects">coverage-lab</a><span class="stars">★ 1.4k</span></h3>
+        <p>Conformal prediction with drift detection: honest prediction intervals
+        for time series that refuse to be i.i.d.</p>
+      </li>
+      <li>
+        <h3><a href="#projects">inkmap</a><span class="stars">★ 870</span></h3>
+        <p>A small family of perceptually uniform, print-safe colour maps —
+        including the paper-and-rust palette shading the fractal behind this text.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section class="card reveal" id="talks" aria-labelledby="talks-h">
+    <span class="sec-no">05 / Talks &amp; teaching</span>
+    <h2 id="talks-h">Lately, at a lectern</h2>
+    <hr class="rule">
+    <ul class="talks">
+      <li><span class="when">2026-04</span>Keynote, EuroSciPy — “Your model is chaotic. Your error bars should know.”</li>
+      <li><span class="when">2025-11</span>Invited talk, Oberwolfach workshop on data-driven dynamics.</li>
+      <li><span class="when">2025-09</span>Guest lecture series, ETH Zürich — <em>Statistics of Strange Attractors</em> (MSc).</li>
+      <li><span class="when">2024-06</span>Tutorial, ICML — Conformal methods for sequential data (with M. Aubert).</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="site" id="contact">
+  <div class="inner">
+    <span class="sec-no" style="color:#e3b9a0;">06 / Contact</span>
+    <h2>The set is connected. So am I.</h2>
+    <a class="mail" href="mailto:vera@complexity-lab.example">vera@complexity-lab.example</a>
+    <p style="color:rgba(242,234,217,.75); max-width:34rem;">
+      I am happy to discuss collaborations, PhD supervision, and reproducibility
+      reviews. Office hours: Thursdays, Rämistrasse 101, Zürich — or wherever
+      there is a blackboard.
+    </p>
+    <p class="colophon">
+      Colophon — This page has no framework and no build step. The background is the
+      Mandelbrot set, z ← z² + c, rendered live in a hand-written WebGL2 fragment
+      shader; scrolling steers an exponential zoom toward
+      c ≈ −0.743644 + 0.131826i (Seahorse Valley), stopping politely before
+      32-bit float precision runs out. Palette: paper, ochre, rust, ink — no neon
+      was harmed. Type: Fraunces &amp; IBM Plex Mono. Honours
+      <span style="white-space:nowrap;">prefers-reduced-motion</span>.
+    </p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const canvas = document.getElementById("fractal");
+  const gaugeZoom = document.getElementById("gauge-zoom");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------------- WebGL2 setup ---------------- */
+  const gl = canvas.getContext("webgl2", {
+    antialias: false,
+    alpha: false,
+    depth: false,
+    stencil: false,
+    powerPreference: "high-performance",
+  });
+
+  if (!gl) {
+    document.body.classList.add("no-webgl");
+    const g = document.getElementById("gauge");
+    if (g) g.hidden = true;
+    initReveal();
+    return;
+  }
+
+  const VERT = `#version 300 es
+in vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+  const FRAG = `#version 300 es
+precision highp float;
+
+uniform vec2  uRes;      // canvas size in pixels
+uniform vec2  uCenter;   // complex-plane centre
+uniform float uSpan;     // width of the view in complex units
+uniform float uRot;      // rotation in radians
+uniform float uIter;     // max iterations
+uniform float uShift;    // palette phase shift
+out vec4 fragColor;
+
+/* paper → ochre → rust → ink → warm grey → paper : periodic 5-stop palette */
+vec3 palette(float t) {
+  const vec3 c0 = vec3(0.929, 0.898, 0.820); /* paper      */
+  const vec3 c1 = vec3(0.690, 0.541, 0.290); /* ochre      */
+  const vec3 c2 = vec3(0.600, 0.243, 0.125); /* rust       */
+  const vec3 c3 = vec3(0.129, 0.110, 0.086); /* ink        */
+  const vec3 c4 = vec3(0.412, 0.388, 0.341); /* warm grey  */
+  float u = fract(t) * 5.0;
+  vec3 col = mix(c0, c1, clamp(u,        0.0, 1.0));
+  col      = mix(col, c2, clamp(u - 1.0, 0.0, 1.0));
+  col      = mix(col, c3, clamp(u - 2.0, 0.0, 1.0));
+  col      = mix(col, c4, clamp(u - 3.0, 0.0, 1.0));
+  col      = mix(col, c0, clamp(u - 4.0, 0.0, 1.0));
+  return col;
+}
+
+void main() {
+  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / uRes.x;
+  float ca = cos(uRot), sa = sin(uRot);
+  uv = mat2(ca, -sa, sa, ca) * uv;
+
+  vec2 c = uCenter + uv * uSpan;
+  vec2 z = vec2(0.0);
+  float n = -1.0;
+  int maxI = int(uIter);
+
+  for (int i = 0; i < 1200; i++) {
+    if (i >= maxI) break;
+    z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
+    if (dot(z, z) > 256.0) { n = float(i); break; }
+  }
+
+  const vec3 paper = vec3(0.949, 0.918, 0.851);
+  const vec3 ink   = vec3(0.110, 0.094, 0.075);
+  vec3 col;
+
+  if (n < 0.0) {
+    col = ink; /* inside the set */
+  } else {
+    /* smooth (continuous) escape time */
+    float sn = n + 1.0 - log2(0.5 * log2(dot(z, z)));
+    vec3 band = palette(sn * 0.030 + uShift);
+    /* far exterior fades into the page's paper colour */
+    col = mix(paper, band, clamp(sn * 0.085, 0.0, 1.0));
+    /* darken toward the boundary for etching-like depth */
+    float edge = clamp(sn / uIter, 0.0, 1.0);
+    col = mix(col, ink, edge * edge * 0.55);
+  }
+
+  /* faint vignette keeps page edges quiet */
+  vec2 q = gl_FragCoord.xy / uRes;
+  col *= 1.0 - 0.16 * dot(q - 0.5, q - 0.5) * 4.0 * 0.5;
+
+  fragColor = vec4(col, 1.0);
+}`;
+
+  function compile(type, src) {
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(sh));
+      return null;
+    }
+    return sh;
+  }
+
+  const vs = compile(gl.VERTEX_SHADER, VERT);
+  const fs = compile(gl.FRAGMENT_SHADER, FRAG);
+  if (!vs || !fs) { document.body.classList.add("no-webgl"); initReveal(); return; }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(prog));
+    document.body.classList.add("no-webgl");
+    initReveal();
+    return;
+  }
+  gl.useProgram(prog);
+
+  /* fullscreen triangle */
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, "aPos");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const U = {
+    res:    gl.getUniformLocation(prog, "uRes"),
+    center: gl.getUniformLocation(prog, "uCenter"),
+    span:   gl.getUniformLocation(prog, "uSpan"),
+    rot:    gl.getUniformLocation(prog, "uRot"),
+    iter:   gl.getUniformLocation(prog, "uIter"),
+    shift:  gl.getUniformLocation(prog, "uShift"),
+  };
+
+  /* ---------------- zoom choreography ----------------
+     Target: Seahorse Valley. MAX_ZOOM is capped at 2e4 so the
+     deepest frame stays well within float32 precision (the pixel
+     size never drops below a few ULPs of the coordinate values),
+     i.e. the image never decays into blocky precision noise.    */
+  const CENTER   = [-0.74364388703, 0.13182590421];
+  const BASE_SPAN = 3.1;
+  const MAX_ZOOM  = 2.0e4;
+  const LOG_MAX   = Math.log(MAX_ZOOM);
+
+  let targetLog  = 0;            // log(zoom) demanded by scroll position
+  let currentLog = 0;            // smoothed log(zoom) actually rendered
+  let rafId = 0;
+  let lastT = 0;
+
+  function scrollProgress() {
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - window.innerHeight;
+    return max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+  }
+
+  function resize() {
+    const w = window.innerWidth, h = window.innerHeight;
+    /* cap total fragment count (~2.2 MP) so 4K screens stay smooth */
+    const budget = Math.sqrt(2.2e6 / Math.max(1, w * h));
+    const scale = Math.min(window.devicePixelRatio || 1, 2, Math.max(0.5, budget));
+    canvas.width  = Math.round(w * scale);
+    canvas.height = Math.round(h * scale);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+
+  function render(logZoom) {
+    const zoom = Math.exp(logZoom);
+    const span = BASE_SPAN / zoom;
+    const iter = Math.min(1100, Math.round(110 + 110 * (logZoom / Math.LN10)));
+    const rot  = reduceMotion ? 0 : (logZoom / LOG_MAX) * 0.9;
+
+    gl.uniform2f(U.res, canvas.width, canvas.height);
+    gl.uniform2f(U.center, CENTER[0], CENTER[1]);
+    gl.uniform1f(U.span, span);
+    gl.uniform1f(U.rot, rot);
+    gl.uniform1f(U.iter, iter);
+    gl.uniform1f(U.shift, 0.62 + 0.045 * logZoom);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    if (gaugeZoom) {
+      const fmt = zoom < 1000
+        ? "×" + Math.round(zoom).toLocaleString("en-US")
+        : "×" + zoom.toExponential(1).replace("e+", "e");
+      gaugeZoom.textContent = fmt;
+    }
+  }
+
+  function frame(t) {
+    rafId = 0;
+    const dt = Math.min(0.05, (t - lastT) / 1000 || 0.016);
+    lastT = t;
+
+    /* critically-damped-ish exponential approach in log-zoom space */
+    const k = 1 - Math.exp(-dt * 4.2);
+    currentLog += (targetLog - currentLog) * k;
+
+    if (Math.abs(targetLog - currentLog) < 0.0008) {
+      currentLog = targetLog;
+      render(currentLog);
+      return; /* settled: stop the loop, save the battery */
+    }
+    render(currentLog);
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function wake() {
+    targetLog = scrollProgress() * LOG_MAX;
+    if (reduceMotion) {
+      /* no scroll-coupled motion: keep a fixed, calm frame */
+      return;
+    }
+    if (!rafId) { lastT = performance.now(); rafId = requestAnimationFrame(frame); }
+  }
+
+  window.addEventListener("scroll", wake, { passive: true });
+  window.addEventListener("resize", () => {
+    resize();
+    if (reduceMotion) { render(currentLog); } else { wake(); }
+  });
+
+  resize();
+  if (reduceMotion) {
+    /* a single, static mid-depth frame — detailed but motionless */
+    currentLog = Math.log(420);
+    targetLog = currentLog;
+    render(currentLog);
+  } else {
+    targetLog = scrollProgress() * LOG_MAX;
+    currentLog = targetLog;
+    render(currentLog);
+    wake();
+  }
+
+  /* ---------------- section reveal ---------------- */
+  initReveal();
+
+  function initReveal() {
+    const els = document.querySelectorAll(".reveal");
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      els.forEach((el) => el.classList.add("vis"));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) { e.target.classList.add("vis"); io.unobserve(e.target); }
+      }
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    els.forEach((el) => io.observe(el));
+  }
+})();
+</script>
+</body>
+</html>
