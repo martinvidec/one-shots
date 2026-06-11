@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AURA — der KI-Assistent, der mitdenkt. Verstehe, plane und erledige mehr mit einem Assistenten, der deinen Kontext kennt.">
+<title>AURA — Der KI-Assistent, der mitdenkt</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0a0d24;
+  --bg-deep: #060818;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.07);
+  --line: rgba(160, 174, 255, 0.14);
+  --line-strong: rgba(160, 174, 255, 0.28);
+  --ink: #eef0ff;
+  --ink-dim: #a3aacc;
+  --ink-faint: #6b73a0;
+  --glow: #7c8cff;
+  --glow-soft: #aeb8ff;
+  --accent: #ffd9a0;
+  --radius: 18px;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection { background: rgba(124, 140, 255, 0.4); color: #fff; }
+
+.skip-link {
+  position: absolute;
+  left: 1rem; top: -4rem;
+  z-index: 100;
+  background: var(--glow);
+  color: #0a0d24;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+.skip-link:focus { top: 1rem; }
+
+/* ---------- Nav ---------- */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem clamp(1.25rem, 4vw, 3rem);
+  background: linear-gradient(rgba(6, 8, 24, 0.72), rgba(6, 8, 24, 0.35));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.4s ease;
+}
+.nav.scrolled { border-bottom-color: var(--line); }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+.brand-ring {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--glow);
+  position: relative;
+  box-shadow: 0 0 18px rgba(124, 140, 255, 0.55), inset 0 0 8px rgba(124, 140, 255, 0.5);
+}
+.brand-ring::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 2.2rem);
+  list-style: none;
+}
+.nav-links a {
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease;
+}
+.nav-links a:hover, .nav-links a:focus-visible { color: var(--ink); }
+.nav-links .nav-cta {
+  color: var(--bg-deep);
+  background: var(--glow-soft);
+  padding: 0.5rem 1.15rem;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.nav-links .nav-cta:hover, .nav-links .nav-cta:focus-visible {
+  color: var(--bg-deep);
+  box-shadow: 0 0 24px rgba(174, 184, 255, 0.5);
+  transform: translateY(-1px);
+}
+@media (max-width: 640px) {
+  .nav-links li:not(:last-child) { display: none; }
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 7rem clamp(1.25rem, 5vw, 3rem) 5rem;
+  isolation: isolate;
+  overflow: hidden;
+}
+#halo-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 38%, rgba(38, 48, 120, 0.55), transparent 70%),
+    var(--bg-deep);
+}
+/* Static fallback "halo" when WebGL/animation is unavailable */
+#halo-bg.static-halo::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 42%;
+  width: min(60vmin, 540px);
+  height: min(60vmin, 540px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1.5px solid rgba(160, 174, 255, 0.35);
+  box-shadow:
+    0 0 120px 30px rgba(94, 110, 220, 0.25),
+    inset 0 0 90px rgba(94, 110, 220, 0.3);
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 30%;
+  z-index: -1;
+  background: linear-gradient(transparent, var(--bg));
+  pointer-events: none;
+}
+
+.hero-inner { max-width: 60rem; }
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--glow-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  background: rgba(10, 13, 36, 0.45);
+  backdrop-filter: blur(6px);
+}
+.hero-eyebrow .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.6rem, 7.5vw, 5.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  margin: 1.6rem 0 1.4rem;
+  text-wrap: balance;
+}
+.hero h1 em {
+  font-style: italic;
+  font-weight: 400;
+  background: linear-gradient(105deg, var(--glow-soft), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero p.lede {
+  max-width: 36rem;
+  margin: 0 auto 2.4rem;
+  font-size: clamp(1.02rem, 1.6vw, 1.2rem);
+  color: var(--ink-dim);
+  text-wrap: balance;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.9rem;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.btn-primary {
+  background: linear-gradient(105deg, #8d9bff, #c2caff);
+  color: #090b20;
+  box-shadow: 0 0 0 rgba(141, 155, 255, 0);
+}
+.btn-primary:hover, .btn-primary:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(141, 155, 255, 0.45);
+}
+.btn-ghost {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  background: rgba(10, 13, 36, 0.4);
+  backdrop-filter: blur(6px);
+}
+.btn-ghost:hover, .btn-ghost:focus-visible {
+  background: var(--surface-2);
+  transform: translateY(-2px);
+}
+
+.hero-meta {
+  margin-top: 3.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 2.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--ink-faint);
+  font-size: 1.4rem;
+  text-decoration: none;
+  animation: bob 2.4s ease-in-out infinite;
+}
+@keyframes bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 8px); }
+}
+
+/* ---------- Sections ---------- */
+section { padding: clamp(4.5rem, 9vw, 8rem) clamp(1.25rem, 5vw, 3rem); }
+.shell { max-width: 72rem; margin: 0 auto; }
+
+.section-head { max-width: 44rem; margin-bottom: clamp(2.5rem, 5vw, 4.5rem); }
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 1rem;
+}
+.section-head h2 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.9rem, 4.2vw, 3rem);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+.section-head h2 em {
+  font-style: italic;
+  color: var(--glow-soft);
+}
+.section-head p {
+  margin-top: 1.1rem;
+  color: var(--ink-dim);
+  font-size: 1.05rem;
+}
+
+/* ---------- Chat demo ---------- */
+.demo { background: linear-gradient(var(--bg), #0c1030 55%, var(--bg)); }
+.demo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+}
+@media (max-width: 860px) {
+  .demo-grid { grid-template-columns: 1fr; }
+}
+
+.demo-copy .section-head { margin-bottom: 1.8rem; }
+.demo-points { list-style: none; display: grid; gap: 1.1rem; }
+.demo-points li {
+  display: flex;
+  gap: 0.9rem;
+  color: var(--ink-dim);
+  font-size: 0.98rem;
+}
+.demo-points .tick {
+  flex: 0 0 auto;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  font-size: 0.7rem;
+  margin-top: 0.15rem;
+}
+
+.chat-window {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(8, 10, 30, 0.85);
+  box-shadow: 0 30px 80px rgba(3, 4, 14, 0.7), 0 0 60px rgba(124, 140, 255, 0.07);
+  overflow: hidden;
+}
+.chat-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.85rem 1.2rem;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+}
+.chat-bar .lamp { width: 10px; height: 10px; border-radius: 50%; background: var(--line-strong); }
+.chat-bar .lamp:first-child { background: rgba(255, 120, 120, 0.6); }
+.chat-bar .lamp:nth-child(2) { background: rgba(255, 217, 160, 0.6); }
+.chat-bar .lamp:nth-child(3) { background: rgba(140, 230, 170, 0.6); }
+.chat-bar .chat-title {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+.chat-log {
+  padding: 1.4rem;
+  display: grid;
+  gap: 1rem;
+  min-height: 21rem;
+  align-content: start;
+}
+.msg {
+  max-width: 85%;
+  padding: 0.8rem 1.05rem;
+  border-radius: 14px;
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+.msg.user {
+  justify-self: end;
+  background: linear-gradient(120deg, rgba(141, 155, 255, 0.22), rgba(141, 155, 255, 0.12));
+  border: 1px solid rgba(141, 155, 255, 0.3);
+  border-bottom-right-radius: 4px;
+}
+.msg.aura {
+  justify-self: start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 4px;
+  color: var(--ink-dim);
+}
+.msg.aura strong { color: var(--ink); font-weight: 500; }
+.msg .who {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.35rem;
+}
+.msg.aura .who { color: var(--accent); }
+.caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  background: var(--glow-soft);
+  vertical-align: -0.15em;
+  margin-left: 1px;
+  animation: blink 0.9s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .caret { animation: none; }
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0 1.4rem 1.4rem;
+  padding: 0.75rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+}
+.chat-input .send {
+  margin-left: auto;
+  width: 30px; height: 30px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--glow);
+  color: var(--bg-deep);
+  font-size: 0.85rem;
+}
+
+/* ---------- Features ---------- */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 1.2rem;
+}
+.feature {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.9rem 1.7rem;
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+.feature::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(34rem circle at var(--mx, 50%) var(--my, 0%), rgba(124, 140, 255, 0.12), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.feature:hover { border-color: var(--line-strong); transform: translateY(-3px); }
+.feature:hover::before { opacity: 1; }
+
+.feature .glyph {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-style: italic;
+  color: var(--accent);
+  display: inline-grid;
+  place-items: center;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  margin-bottom: 1.3rem;
+  background: rgba(255, 217, 160, 0.05);
+}
+.feature h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.12rem;
+  margin-bottom: 0.55rem;
+  letter-spacing: 0.01em;
+}
+.feature p { color: var(--ink-dim); font-size: 0.94rem; }
+
+/* ---------- Pricing ---------- */
+.pricing { background: linear-gradient(var(--bg), #0c1030 50%, var(--bg)); }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1.2rem;
+  align-items: stretch;
+}
+.plan {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2.1rem 1.8rem;
+  background: var(--surface);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.plan:hover { transform: translateY(-4px); border-color: var(--line-strong); }
+.plan.featured {
+  border-color: rgba(141, 155, 255, 0.55);
+  background: linear-gradient(165deg, rgba(141, 155, 255, 0.13), rgba(141, 155, 255, 0.03));
+  box-shadow: 0 0 50px rgba(124, 140, 255, 0.14);
+  position: relative;
+}
+.plan .badge {
+  position: absolute;
+  top: -0.85rem;
+  right: 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bg-deep);
+  background: var(--accent);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  font-weight: 500;
+}
+.plan h3 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.plan .price {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 2.9rem;
+  margin: 0.9rem 0 0.1rem;
+  line-height: 1;
+}
+.plan .price span { font-size: 1rem; color: var(--ink-faint); font-family: var(--font-body); }
+.plan .plan-sub { color: var(--ink-faint); font-size: 0.88rem; margin-bottom: 1.5rem; }
+.plan ul {
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+  margin-bottom: 2rem;
+  color: var(--ink-dim);
+  font-size: 0.93rem;
+}
+.plan ul li::before { content: "◦ "; color: var(--accent); }
+.plan .btn { margin-top: auto; justify-content: center; }
+
+/* ---------- Final CTA ---------- */
+.finale { text-align: center; }
+.finale .ring-wrap {
+  width: 110px; height: 110px;
+  margin: 0 auto 2.2rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 60px rgba(124, 140, 255, 0.25), inset 0 0 30px rgba(124, 140, 255, 0.18);
+  animation: pulse-ring 4s ease-in-out infinite;
+}
+.finale .ring-wrap::after {
+  content: "";
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 24px var(--accent);
+}
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 60px rgba(124, 140, 255, 0.25), inset 0 0 30px rgba(124, 140, 255, 0.18); }
+  50% { box-shadow: 0 0 90px rgba(124, 140, 255, 0.45), inset 0 0 40px rgba(124, 140, 255, 0.3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .finale .ring-wrap, .scroll-hint { animation: none; }
+}
+.finale h2 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  margin-bottom: 1rem;
+  text-wrap: balance;
+}
+.finale h2 em { font-style: italic; color: var(--glow-soft); }
+.finale p { color: var(--ink-dim); max-width: 32rem; margin: 0 auto 2.2rem; }
+
+/* ---------- Footer ---------- */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 2.4rem clamp(1.25rem, 5vw, 3rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  color: var(--ink-faint);
+  font-size: 0.85rem;
+}
+footer nav { display: flex; gap: 1.6rem; flex-wrap: wrap; }
+footer a { color: var(--ink-dim); text-decoration: none; }
+footer a:hover, footer a:focus-visible { color: var(--ink); }
+
+/* ---------- Reveal on scroll ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+:focus-visible {
+  outline: 2px solid var(--glow-soft);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="AURA — Startseite">
+    <span class="brand-ring" aria-hidden="true"></span>
+    AURA
+  </a>
+  <nav aria-label="Hauptnavigation">
+    <ul class="nav-links">
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#features">Funktionen</a></li>
+      <li><a href="#pricing">Preise</a></li>
+      <li><a class="nav-cta" href="#pricing">Kostenlos starten</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div id="halo-bg" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <span class="hero-eyebrow"><span class="dot" aria-hidden="true"></span> Jetzt in offener Beta</span>
+      <h1 id="hero-title">Ein Assistent,<br>der <em>mitdenkt</em> — nicht nur antwortet.</h1>
+      <p class="lede">AURA versteht deinen Kontext, erinnert sich an das Wichtige und erledigt Aufgaben Ende-zu-Ende. Wie ein zweites Gehirn, nur höflicher.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#pricing">Kostenlos starten <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="#demo">Live-Demo ansehen</a>
+      </div>
+      <div class="hero-meta" role="list">
+        <span role="listitem">128k Kontext</span>
+        <span role="listitem">EU-Hosting</span>
+        <span role="listitem">Ende-zu-Ende verschlüsselt</span>
+        <span role="listitem">Keine Trainingsdaten aus deinen Chats</span>
+      </div>
+    </div>
+    <a class="scroll-hint" href="#demo" aria-label="Nach unten scrollen">↓</a>
+  </section>
+
+  <!-- ============ CHAT DEMO ============ -->
+  <section class="demo" id="demo" aria-labelledby="demo-title">
+    <div class="shell demo-grid">
+      <div class="demo-copy reveal">
+        <div class="section-head">
+          <span class="kicker">01 — Im Gespräch</span>
+          <h2 id="demo-title">Frag einfach. <em>AURA</em> macht den Rest.</h2>
+          <p>Keine Prompt-Akrobatik nötig. AURA fragt nach, wenn etwas unklar ist, und liefert Ergebnisse statt Textwände.</p>
+        </div>
+        <ul class="demo-points">
+          <li><span class="tick" aria-hidden="true">✦</span> Versteht Folgefragen und behält den Faden — auch über Tage hinweg.</li>
+          <li><span class="tick" aria-hidden="true">✦</span> Greift auf deinen Kalender, deine Notizen und Dateien zu (nur mit Erlaubnis).</li>
+          <li><span class="tick" aria-hidden="true">✦</span> Antwortet in deinem Ton: knapp, ausführlich oder mit einer Prise Humor.</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <div class="chat-window" role="img" aria-label="Beispiel-Unterhaltung: Ein Nutzer bittet AURA, das Team-Meeting vorzubereiten. AURA fasst offene Punkte zusammen, erstellt eine Agenda und verschiebt einen Termin-Konflikt.">
+          <div class="chat-bar" aria-hidden="true">
+            <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
+            <span class="chat-title">aura · session 042</span>
+          </div>
+          <div class="chat-log" id="chat-log" aria-hidden="true"></div>
+          <div class="chat-input" aria-hidden="true">
+            Nachricht an AURA …
+            <span class="send">↑</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section id="features" aria-labelledby="features-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <span class="kicker">02 — Funktionen</span>
+        <h2 id="features-title">Gebaut für Menschen mit <em>zu vielen Tabs</em>.</h2>
+        <p>Sechs Dinge, die AURA besser kann als dein bisheriges Setup aus Notizen, Remindern und gutem Willen.</p>
+      </div>
+      <div class="features-grid">
+        <article class="feature reveal">
+          <span class="glyph" aria-hidden="true">m</span>
+          <h3>Gedächtnis mit Geschmack</h3>
+          <p>AURA merkt sich Entscheidungen, Vorlieben und Projekte — und vergisst auf Wunsch sofort und nachweisbar.</p>
+        </article>
+        <article class="feature reveal">
+          <span class="glyph" aria-hidden="true">a</span>
+          <h3>Aufgaben, nicht nur Antworten</h3>
+          <p>Recherchieren, zusammenfassen, Termine verschieben, Entwürfe schreiben: AURA führt mehrstufige Aufgaben selbstständig aus.</p>
+        </article>
+        <article class="feature reveal">
+          <span class="glyph" aria-hidden="true">q</span>
+          <h3>Quellen statt Vermutungen</h3>
+          <p>Jede Behauptung mit Beleg. AURA zitiert Quellen, markiert Unsicherheit und sagt ehrlich „weiß ich nicht".</p>
+        </article>
+        <article class="feature reveal">
+          <span class="glyph" aria-hidden="true">p</span>
+          <h3>Privat by Default</h3>
+          <p>EU-Hosting, Verschlüsselung Ende-zu-Ende, kein Training auf deinen Daten. Dein Kontext gehört dir.</p>
+        </article>
+        <article class="feature reveal">
+          <span class="glyph" aria-hidden="true">w</span>
+          <h3>Wo du arbeitest</h3>
+          <p>Browser, Editor, Terminal, Messenger: AURA ist per API, Erweiterung und Tastenkürzel überall einen Shortcut entfernt.</p>
+        </article>
+        <article class="feature reveal">
+          <span class="glyph" aria-hidden="true">t</span>
+          <h3>Dein Ton, deine Regeln</h3>
+          <p>Persönliche Stilprofile, feste Grenzen, eigene Befehle. AURA passt sich dir an — niemals umgekehrt.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRICING ============ -->
+  <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <span class="kicker">03 — Preise</span>
+        <h2 id="pricing-title">Fair gestaffelt. <em>Jederzeit kündbar.</em></h2>
+        <p>Starte kostenlos und wachse, wenn du mehr brauchst. Keine versteckten Kontingente, kein Kleingedrucktes.</p>
+      </div>
+      <div class="pricing-grid">
+        <article class="plan reveal" aria-labelledby="plan-free">
+          <h3 id="plan-free">Orbit</h3>
+          <p class="price">0&nbsp;€ <span>/ Monat</span></p>
+          <p class="plan-sub">Zum Ausprobieren und für Gelegenheitsfragen.</p>
+          <ul>
+            <li>50 Unterhaltungen pro Monat</li>
+            <li>8k Kontextfenster</li>
+            <li>Gedächtnis für 7 Tage</li>
+            <li>Community-Support</li>
+          </ul>
+          <a class="btn btn-ghost" href="#top">Loslegen</a>
+        </article>
+        <article class="plan featured reveal" aria-labelledby="plan-pro">
+          <span class="badge">Beliebt</span>
+          <h3 id="plan-pro">Corona</h3>
+          <p class="price">14&nbsp;€ <span>/ Monat</span></p>
+          <p class="plan-sub">Für alle, die täglich mit AURA arbeiten.</p>
+          <ul>
+            <li>Unbegrenzte Unterhaltungen</li>
+            <li>128k Kontextfenster</li>
+            <li>Dauerhaftes, durchsuchbares Gedächtnis</li>
+            <li>Kalender-, Mail- &amp; Datei-Anbindung</li>
+            <li>Prioritäts-Antwortzeiten</li>
+          </ul>
+          <a class="btn btn-primary" href="#top">14 Tage gratis testen</a>
+        </article>
+        <article class="plan reveal" aria-labelledby="plan-team">
+          <h3 id="plan-team">Nova</h3>
+          <p class="price">39&nbsp;€ <span>/ Platz · Monat</span></p>
+          <p class="plan-sub">Für Teams mit gemeinsamem Wissen.</p>
+          <ul>
+            <li>Alles aus Corona</li>
+            <li>Geteilte Team-Gedächtnisse</li>
+            <li>SSO, Audit-Logs &amp; Admin-Konsole</li>
+            <li>API-Zugang &amp; eigene Befehle</li>
+            <li>Persönlicher Onboarding-Call</li>
+          </ul>
+          <a class="btn btn-ghost" href="#top">Vertrieb kontaktieren</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINALE ============ -->
+  <section class="finale" aria-labelledby="finale-title">
+    <div class="shell reveal">
+      <div class="ring-wrap" aria-hidden="true"></div>
+      <h2 id="finale-title">Hol dir deinen <em>Heiligenschein</em>.</h2>
+      <p>Zwei Minuten Einrichtung, keine Kreditkarte. Danach fragst du dich, wie du je ohne gearbeitet hast.</p>
+      <a class="btn btn-primary" href="#top">AURA kostenlos starten <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>© 2026 AURA Labs — ein fiktives Produkt, gebaut als One-Shot.</span>
+  <nav aria-label="Footer">
+    <a href="#demo">Demo</a>
+    <a href="#features">Funktionen</a>
+    <a href="#pricing">Preise</a>
+    <a href="https://github.com/tengbao/vanta" rel="noopener">Hintergrund: Vanta.js HALO</a>
+  </nav>
+</footer>
+
+<!-- three.js r134 + Vanta HALO (offiziell dokumentierte CDN-Einbindung) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.halo.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Vanta HALO background ---------- */
+  var haloEl = document.getElementById("halo-bg");
+  var vantaEffect = null;
+
+  function supportsWebGL() {
+    try {
+      var c = document.createElement("canvas");
+      return !!(window.WebGLRenderingContext &&
+        (c.getContext("webgl") || c.getContext("experimental-webgl")));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  if (!reducedMotion && window.VANTA && window.VANTA.HALO && supportsWebGL()) {
+    try {
+      vantaEffect = window.VANTA.HALO({
+        el: haloEl,
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.0,
+        minWidth: 200.0,
+        backgroundColor: 0x60818,   /* = #060818, passend zu --bg-deep */
+        baseColor: 0x2b3a8f,
+        amplitudeFactor: 1.4,
+        size: 1.4,
+        xOffset: 0,
+        yOffset: 0.08
+      });
+      window.addEventListener("pagehide", function () {
+        if (vantaEffect) { vantaEffect.destroy(); vantaEffect = null; }
+      });
+    } catch (e) {
+      haloEl.classList.add("static-halo");
+    }
+  } else {
+    /* Reduced motion oder kein WebGL: ruhige, statische CSS-Halo-Alternative */
+    haloEl.classList.add("static-halo");
+  }
+
+  /* ---------- Nav border on scroll ---------- */
+  var nav = document.getElementById("nav");
+  function onScroll() {
+    nav.classList.toggle("scrolled", window.scrollY > 24);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- Reveal on scroll ---------- */
+  if ("IntersectionObserver" in window && !reducedMotion) {
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -5% 0px" });
+    document.querySelectorAll(".reveal").forEach(function (el) {
+      revealObserver.observe(el);
+    });
+  } else {
+    document.querySelectorAll(".reveal").forEach(function (el) {
+      el.classList.add("in");
+    });
+  }
+
+  /* ---------- Feature card cursor glow ---------- */
+  document.querySelectorAll(".feature").forEach(function (card) {
+    card.addEventListener("pointermove", function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      card.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+  });
+
+  /* ---------- Typed chat demo ---------- */
+  var script = [
+    { who: "user", text: "Bereite mein Team-Meeting morgen um 10 Uhr vor." },
+    { who: "aura", text: "Gern. Ich habe 3 offene Punkte aus dem letzten Protokoll gefunden und eine Agenda mit Zeitboxen entworfen. Achtung: Dein 9:30-Call überschneidet sich — soll ich ihn auf 14:00 verschieben?" },
+    { who: "user", text: "Ja, verschieben. Und schick die Agenda ans Team." },
+    { who: "aura", text: "Erledigt. Call verschoben, Agenda an 5 Personen gesendet. Ich erinnere dich morgen um 9:50 mit einer 60-Sekunden-Zusammenfassung." }
+  ];
+
+  var log = document.getElementById("chat-log");
+
+  function renderStatic() {
+    script.forEach(function (m) {
+      var div = document.createElement("div");
+      div.className = "msg " + m.who;
+      var who = document.createElement("span");
+      who.className = "who";
+      who.textContent = m.who === "user" ? "Du" : "AURA";
+      div.appendChild(who);
+      div.appendChild(document.createTextNode(m.text));
+      log.appendChild(div);
+    });
+  }
+
+  function typeMessage(m, done) {
+    var div = document.createElement("div");
+    div.className = "msg " + m.who;
+    var who = document.createElement("span");
+    who.className = "who";
+    who.textContent = m.who === "user" ? "Du" : "AURA";
+    var textNode = document.createTextNode("");
+    var caret = document.createElement("span");
+    caret.className = "caret";
+    div.appendChild(who);
+    div.appendChild(textNode);
+    div.appendChild(caret);
+    log.appendChild(div);
+
+    var i = 0;
+    var speed = m.who === "user" ? 34 : 14;
+    (function tick() {
+      if (i < m.text.length) {
+        textNode.nodeValue = m.text.slice(0, ++i);
+        setTimeout(tick, speed);
+      } else {
+        caret.remove();
+        setTimeout(done, 550);
+      }
+    })();
+  }
+
+  function playScript() {
+    var idx = 0;
+    (function next() {
+      if (idx < script.length) {
+        typeMessage(script[idx++], next);
+      }
+    })();
+  }
+
+  if (reducedMotion || !("IntersectionObserver" in window)) {
+    renderStatic();
+  } else {
+    var played = false;
+    var chatObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !played) {
+          played = true;
+          chatObserver.disconnect();
+          playScript();
+        }
+      });
+    }, { threshold: 0.4 });
+    chatObserver.observe(log);
+  }
+})();
+</script>
+
+</body>
+</html>
